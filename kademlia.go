@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-package main
-=======
 package d7024e
 
 import "net"
->>>>>>> b799241e9953bb156fdedc5e994fabaecb300906
 import "fmt"
 import "strconv"
 import "bufio"
