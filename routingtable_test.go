@@ -1,4 +1,4 @@
-package d7024e
+package main
 
 import (
 	"fmt"
@@ -20,8 +20,11 @@ func TestRoutingTable(t *testing.T) {
 	for i := range contacts {
 		fmt.Println(contacts[i].String())
 	}
-	
+
 	kademlia:=NewKademlia(*rt,2,1)
 	go kademlia.ServerThread("8000")
+<<<<<<< HEAD
+=======
 	fmt.Println(SendPingMessage(srcContact, srcContact))
+>>>>>>> b799241e9953bb156fdedc5e994fabaecb300906
 }
