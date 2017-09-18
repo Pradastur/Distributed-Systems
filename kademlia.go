@@ -85,6 +85,5 @@ func (kademlia *Kademlia) ServerThread(port string) {
     //conn.Write([]byte(string(JSONResponseMessage) + "\n"))
 		fmt.Fprintf(conn, string(JSONResponseMessage) + "\n")
 		fmt.Println("Json Response: " + string(JSONResponseMessage))
-
   }
 }
