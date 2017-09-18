@@ -26,23 +26,24 @@ type Message struct {
     Content string
 }
 
+//UDP
 
 func Listen(ip string, port int) {
-	// TODO
+	// TODO ServerThread
 }
 
 func (network *Network) SendPingMessage(contact *Contact) {
-	// TODO
+	// TODO Client
 }
 
 func (network *Network) SendFindContactMessage(contact *Contact) {
-	// TODO
+	// TODO Client
 }
 
 func (network *Network) SendFindDataMessage(hash string) {
-	// TODO
+	// TODO Sprint 2
 }
 
 func (network *Network) SendStoreMessage(data []byte) {
-	// TODO
+	// TODO Sprint 2
 }
