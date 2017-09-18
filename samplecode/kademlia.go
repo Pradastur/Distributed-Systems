@@ -1,11 +1,11 @@
 package main
 
-
 type Kademlia struct {
-  routingTable RoutingTable
-  k            int
-  alpha        int
-  network      Network
+	routingTable RoutingTable
+	k            int
+	alpha        int
+	network      Network
+	//data         map[string]File
 }
 
 func NewKademlia(rt RoutingTable, k int, alpha int) *Kademlia {
@@ -13,7 +13,8 @@ func NewKademlia(rt RoutingTable, k int, alpha int) *Kademlia {
 	kademlia.routingTable = rt
 	kademlia.k = k
 	kademlia.alpha = alpha
-	kademlia.network = Network{}
+	kademlia.network = Network{rt}
+	//kademlia.data = make(map[string]File)
 	return kademlia
 }
 
@@ -27,4 +28,8 @@ func (kademlia *Kademlia) LookupData(hash string) {
 
 func (kademlia *Kademlia) Store(data []byte) {
 	// TODO
+}
+
+func (kademlia *Kademlia) ServerThread(port string) { // puede no ser necesario
+	// lanzar network
 }

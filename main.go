@@ -61,7 +61,7 @@ var alpha int =3
 
 }*/
 
-func main() {
+/*func main() {
 	var cmd string
 	mapKademlia :=  make(map[string]*Kademlia)
 	reader := bufio.NewReader(os.Stdin)
@@ -120,7 +120,7 @@ func main() {
 				for i := range mapKademlia {
 					fmt.Println("ID "+i+" : "+ mapKademlia[i].routingTable.me.ID.String())
 				}*/
-				graphvizContent := "graph {\n "
+				/*graphvizContent := "graph {\n "
 				for i:= range mapKademlia {
 					graphvizContent+=mapKademlia[i].routingTable.me.ID.String() +"[label="+i
 					if(len(mapKademlia[i].data)>0){

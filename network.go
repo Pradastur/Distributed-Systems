@@ -3,10 +3,11 @@ package main
 import "net"
 import "bufio"
 import "encoding/json"
-import "time"
 import "fmt"
+import "strconv"
 
 type Network struct {
+  routingTable RoutingTable
 }
 
 type MessageType int
@@ -60,8 +61,30 @@ func Listen(ip string, port int) {
   }
 }
 
+func (network *Network) SendMessage(contact *Contact, mType MessageType, content string) {
+  messageToSend := &Message{network.routingTable.me, mType, content}
+conn, conErr := net.Dial("udp", destContact.Address)
+//jsonToSend, _ := json.Marshal(messageToSend)
+//conn.Write([]byte(jsonToSend))
+fmt.Println(messageToSend)
+//listen for reply
+input := make(chan string, 1)
+
+
+if(conErr==nil){
+  fmt.Println("The connection couldn't be created")
+}
+//fmt.Println("Text to send: ")
+text, _ := json.Marshal(messageToSend)
+
+//fmt.Println(time.Now().String() + "Message to send server: "+string(text))
+
+// send to socket
+fmt.Fprintf(conn, string(text) + "\n")
+}
+
 func (network *Network) SendPingMessage(contact *Contact) {
-	// TODO
+	network.sendMessage(contact,PING,contact.ID.String())
 }
 
 func (network *Network) SendFindContactMessage(contact *Contact) {
