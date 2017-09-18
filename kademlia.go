@@ -26,8 +26,19 @@ func NewKademlia(rt RoutingTable, k int, alpha int) *Kademlia {
 // used http://technosophos.com/2014/03/18/a-simple-udp-server-in-go.html
 func (kademlia *Kademlia) ServerThread(port string) {
   fmt.Println("Deploying server thread on port " + port)
-  port_int, error := strconv.Atoi(port)
-  if error != nil {
+  port_int, error := strconv.Atoi(por
+
+
+
+
+
+
+
+
+
+
+
+      if error != nil {
     // handle error
   }
 
