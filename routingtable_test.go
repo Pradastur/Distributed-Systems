@@ -21,5 +21,4 @@ func TestRoutingTable(t *testing.T) {
 	}
 	kademlia:=NewKademlia(*rt,2,1)
 	go kademlia.ServerThread("8000")
-	//fsdga
 }
