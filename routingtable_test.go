@@ -6,7 +6,8 @@ import (
 )
 
 func TestRoutingTable(t *testing.T) {
-	rt := NewRoutingTable(NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000"))
+	srcContact := NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000")
+	rt := NewRoutingTable(srcContact)
 
 	rt.AddContact(NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001"))
 	rt.AddContact(NewContact(NewKademliaID("1111111100000000000000000000000000000000"), "localhost:8003"))
@@ -19,7 +20,8 @@ func TestRoutingTable(t *testing.T) {
 	for i := range contacts {
 		fmt.Println(contacts[i].String())
 	}
+	
 	kademlia:=NewKademlia(*rt,2,1)
 	go kademlia.ServerThread("8000")
-
+	fmt.Println(SendPingMessage(srcContact, srcContact))
 }
