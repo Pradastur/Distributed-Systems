@@ -1,5 +1,9 @@
 package d7024e
+<<<<<<< HEAD
 
+=======
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+>>>>>>> 7c0200b88679ec6fb108f64e80dded1e68940c3b
 import "fmt"
 import "bufio"
 //import "os"
