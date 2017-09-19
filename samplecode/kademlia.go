@@ -9,27 +9,27 @@ type Kademlia struct {
 }
 
 func NewKademlia(rt RoutingTable, k int, alpha int) *Kademlia {
+	var IdArray []int
 	kademlia := &Kademlia{}
 	kademlia.routingTable = rt
 	kademlia.k = k
 	kademlia.alpha = alpha
-	kademlia.network = Network{rt}
+	kademlia.network = Network{rt, kademlia, IdArray}
 	//kademlia.data = make(map[string]File)
 	return kademlia
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact) {
-	// TODO
+	contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.k)
+	for i := range contacts {
+		kademlia.network.SendFindContactMessage(&contacts[i], target.ID)
+	}
 }
 
 func (kademlia *Kademlia) LookupData(hash string) {
-	// TODO
+	// TODO Sprint 2
 }
 
 func (kademlia *Kademlia) Store(data []byte) {
-	// TODO
-}
-
-func (kademlia *Kademlia) ServerThread(port string) { // puede no ser necesario
-	// lanzar network
+	// TODO Sprint 2
 }
