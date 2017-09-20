@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Kademlia struct {
 	routingTable RoutingTable
 	k            int
@@ -8,21 +10,28 @@ type Kademlia struct {
 	//data         map[string]File
 }
 
-func NewKademlia(rt RoutingTable, k int, alpha int) *Kademlia {
+func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kademlia {
 	var IdArray []int
 	kademlia := &Kademlia{}
 	kademlia.routingTable = rt
 	kademlia.k = k
 	kademlia.alpha = alpha
-	kademlia.network = Network{rt, kademlia, IdArray}
+	networkMessageMap := make(map[int]Contact)
+	networkMessageRecord := make(map[int]messageControl)
+	kademlia.network = Network{rt, kademlia, IdArray, networkMessageRecord, networkMessageMap, channel}
 	//kademlia.data = make(map[string]File)
 	return kademlia
 }
 
-func (kademlia *Kademlia) LookupContact(target *Contact) {
-	contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.k)
+func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
+	contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+	kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
+	//fmt.Println("SOURCE: " + source.Address)
 	for i := range contacts {
-		kademlia.network.SendFindContactMessage(&contacts[i], target.ID)
+		fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
+		//if source.Address != contacts[i].Address {
+		kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
+		//}
 	}
 }
 

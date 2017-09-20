@@ -6,20 +6,23 @@ import (
 )
 
 func TestRoutingTable(t *testing.T) {
-	go nodoUno()
-	go nodoDos()
+	go node1()
+	go node2()
+	go node3()
+	go node4()
 	for {
 	}
 	//fmt.Println(SendPingMessage(srcContact, srcContact))
 }
 
-func nodoUno() {
+func node1() {
 	srcContact := NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000")
 	rt := NewRoutingTable(srcContact)
 
 	destino := NewContact(NewKademliaID("1111111100000000000000000000000000000000"), "localhost:8002")
+	unknownContact := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "")
 
-	rt.AddContact(srcContact)//NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001"))
+	rt.AddContact(srcContact) //NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001"))
 	rt.AddContact(destino)
 	//rt.AddContact(NewContact(NewKademliaID("1111111200000000000000000000000000000000"), "localhost:8002"))
 	//rt.AddContact(NewContact(NewKademliaID("1111111300000000000000000000000000000000"), "localhost:8002"))
@@ -31,35 +34,50 @@ func nodoUno() {
 		fmt.Println("N1 Contact: " + contacts[i].String())
 	}
 
-	kademlia := NewKademlia(*rt, 2, 1)
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	fmt.Println(kademlia.network.messageMap[1])
+
 	go kademlia.network.Listen("localhost", 8000)
-	kademlia.network.SendPingMessage(&destino)
+	//kademlia.network.SendPingMessage(&destino)
+	kademlia.LookupContact(&unknownContact, 1234)
+	var contactList []Contact
+
+	contactList = <-channel
+	fmt.Println("LIST OF CONTACTS RECEIVED WOHOOO (i think lol)")
+	fmt.Println(contactList)
 }
 
-func nodoDos() {
+func node2() {
 	srcContact := NewContact(NewKademliaID("1111111100000000000000000000000000000000"), "localhost:8002")
+	node3Contact := NewContact(NewKademliaID("1111111300000000000000000000000000000000"), "localhost:8003")
+
 	rt := NewRoutingTable(srcContact)
 
-	//destino := NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000")
 	rt.AddContact(srcContact)
-	//rt.AddContact(NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001"))
-	//rt.AddContact(destino)
-	//rt.AddContact(NewContact(NewKademliaID("1111111200000000000000000000000000000000"), "localhost:8002"))
-	//rt.AddContact(NewContact(NewKademliaID("1111111300000000000000000000000000000000"), "localhost:8002"))
-	//rt.AddContact(NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8002"))
-	//rt.AddContact(NewContact(NewKademliaID("2111111400000000000000000000000000000000"), "localhost:8002"))
-
-	//contacts := rt.FindClosestContacts(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), 20)
-	//for i := range contacts {
-	//	fmt.Println("N2 Contact: " + contacts[i].String())
-	//}
-
-	kademlia := NewKademlia(*rt, 2, 1)
+	rt.AddContact(node3Contact)
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
 	go kademlia.network.Listen("localhost", 8002)
-	//kademlia.network.SendPingMessage(&destino)
-	
-	//contacts2 := rt.FindClosestContacts(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), 20)
-	//for i := range contacts2 {
-		//fmt.Println("N22 Contact: " + contacts2[i].String())
-	//}
+}
+
+func node3() {
+	srcContact := NewContact(NewKademliaID("1111111300000000000000000000000000000000"), "localhost:8003")
+	node4Contact := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+	rt := NewRoutingTable(srcContact)
+	rt.AddContact(srcContact)
+	rt.AddContact(node4Contact)
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	go kademlia.network.Listen("localhost", 8003)
+
+}
+
+func node4() {
+	srcContact := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+	rt := NewRoutingTable(srcContact)
+	rt.AddContact(srcContact)
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	go kademlia.network.Listen("localhost", 8004)
 }
