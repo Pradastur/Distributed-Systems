@@ -36,7 +36,7 @@ func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 }
 
 func (kademlia *Kademlia) LookupData(hash string) {
-	// TODO Sprint 2
+
 }
 
 func (kademlia *Kademlia) Store(data []byte) {
