@@ -15,3 +15,8 @@ func (dht *DHT) Update(hash KademliaID, contact Contact) {
 	    dht.dhtMap[hash] =
 	  }*/
 }
+
+func (dht *DHT) isEmpty(hash KademliaID) bool {
+	contactList := dht.dhtMap[hash]
+	return len(contactList) == 0
+}
