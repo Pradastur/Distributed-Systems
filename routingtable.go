@@ -16,6 +16,16 @@ func NewRoutingTable(me Contact) *RoutingTable {
 	return routingTable
 }
 
+func (routingTable *RoutingTable) GetContact(contact Contact) Contact {
+	for i := 0; i < IDLength*8; i++ {
+		wanted := routingTable.buckets[i].GetContact(contact)
+		if wanted.ID != nil {
+			return wanted
+		}
+	}
+	return Contact{nil, "", nil}
+}
+
 func (routingTable *RoutingTable) AddContact(contact Contact) {
 	bucketIndex := routingTable.getBucketIndex(contact.ID)
 	bucket := routingTable.buckets[bucketIndex]
