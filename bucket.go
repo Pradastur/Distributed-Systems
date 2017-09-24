@@ -14,6 +14,19 @@ func newBucket() *bucket {
 	return bucket
 }
 
+func (bucket *bucket) GetContact(contact Contact) Contact {
+	for e := bucket.list.Front(); e != nil; e = e.Next() {
+		node := e.Value.(Contact)
+		nodeID := node.ID
+
+		if (contact).ID.Equals(nodeID) {
+			return node
+		}
+	}
+
+	return Contact{nil, "", nil}
+}
+
 func (bucket *bucket) AddContact(contact Contact) {
 	var element *list.Element
 	for e := bucket.list.Front(); e != nil; e = e.Next() {
@@ -47,4 +60,12 @@ func (bucket *bucket) GetContactAndCalcDistance(target *KademliaID) []Contact {
 
 func (bucket *bucket) Len() int {
 	return bucket.list.Len()
+}
+
+func (bucket *bucket) String() string{
+	output := ""
+	for e := bucket.list.Front(); e != nil; e = e.Next() {
+	 output += e.Value.(Contact).Address
+	}
+	return output
 }
