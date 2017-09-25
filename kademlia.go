@@ -30,8 +30,6 @@ func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kad
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
-	//	nilContact := Contact{nil, "", nil}
-	//	fmt.Println(kademlia.routingTable.GetContact(*target))
 	if kademlia.routingTable.GetContact(*target) != *target {
 		contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
 		kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
