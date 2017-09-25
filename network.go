@@ -80,16 +80,17 @@ func (network *Network) Listen(ip string, port int) {
 		fmt.Println("(SERVER " + port_string + ") Waiting for inputs...")
 		message, _ := bufio.NewReader(conn).ReadString('\n')
 
-		// EVALUAR LO K LLEGA
+		//Message evaluation
 		var messageDecoded Message
 		json.Unmarshal([]byte(message), &messageDecoded)
 
-		//fmt.Println("(SERVER " + port_string + ") receives message type: ", string(messageDecoded.Content[1]))
-		network.routingTable.AddContact(messageDecoded.Source) //source is added to the contacts
+		//add contact at the routing table
+		network.routingTable.AddContact(messageDecoded.Source)
 		fmt.Println("(SERVER "+port_string+") receives message type: ", messageDecoded.MessageType)
 
 		if !network.checkMessage(messageDecoded.ID) {
 			switch messageDecoded.MessageType {
+
 			case PING:
 				network.SendMessage(&messageDecoded.Source, RESPONSE, "", -1)
 				fmt.Println("PING")

@@ -29,6 +29,8 @@ func node0() {
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	data := []byte("Data Test 0")
+	//Ping function properly tested (no devuelve response)
+	//kademlia.network.SendPingMessage(&node1)
 	//data1 := []byte("Data Test 1")
 	//data4 := []byte("Data Test 4")
 
