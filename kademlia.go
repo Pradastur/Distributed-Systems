@@ -43,6 +43,7 @@ func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 }
 
 func (kademlia *Kademlia) LookupData(hash string, messageId int) {
+
 	kademliaIdHash := NewKademliaID(hash)
 	kademlia.network.messageRecord[messageId] = messageControl{0, kademliaIdHash}
 	contact := Contact{kademliaIdHash, "", nil}
