@@ -99,15 +99,22 @@ func (kademlia *Kademlia) ServerThread(port string) {
   }
 =======
 func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
-	contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
-	kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
-	//fmt.Println("SOURCE: " + source.Address)
-	for i := range contacts {
-		fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
-		kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
-		kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
+	//	nilContact := Contact{nil, "", nil}
+	//	fmt.Println(kademlia.routingTable.GetContact(*target))
+	if kademlia.routingTable.GetContact(*target) != *target {
+		contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+		kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
+		for i := range contacts {
+			fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
+			kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
+			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
+		}
 	}
+<<<<<<< HEAD
 >>>>>>> 767f8db8bd364d4c57f29672aff47286b89d27ee
+=======
+	fmt.Println("I already have it")
+>>>>>>> bc56a38fbdd1e2442556219978fe5ecc127d9b47
 }
 
 func (kademlia *Kademlia) LookupData(hash string, messageId int) {

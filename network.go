@@ -27,7 +27,6 @@ type MessageType int
 const (
 	PING MessageType = 1 + iota
 	RESPONSE
-
 	FIND_NODE
 	R_FIND_NODE
 	FIND_VALUE

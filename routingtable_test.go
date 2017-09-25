@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"testing"
@@ -70,3 +71,4 @@ func node2() {
 	kademlia.LookupData(Hash(data), msgID)
 >>>>>>> 767f8db8bd364d4c57f29672aff47286b89d27ee
 }
+*/
