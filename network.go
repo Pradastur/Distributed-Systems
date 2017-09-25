@@ -57,19 +57,6 @@ func (network *Network) setProceed(messageID int) {
 	network.messageIDs[messageID] = true
 }
 
-<<<<<<< HEAD
-//UDP
-
-func Listen(ip string, port int) {
-<<<<<<< HEAD
-	// TODO ServerThread
-=======
-  fmt.Println("Deploying server thread on port " + string(port))
-  port_int, error := strconv.Atoi(port)
-  if error != nil {
-    // handle error
-  }
-=======
 func (network *Network) Listen(ip string, port int) {
 	port_string := strconv.Itoa(port)
 
@@ -93,9 +80,6 @@ func (network *Network) Listen(ip string, port int) {
 		fmt.Println("(SERVER " + port_string + ") Waiting for inputs...")
 		message, _ := bufio.NewReader(conn).ReadString('\n')
 
-		// output message received
-		//fmt.Println("(SERVER "+port_string+") receives: ", string(message))
-
 		// EVALUAR LO K LLEGA
 		var messageDecoded Message
 		json.Unmarshal([]byte(message), &messageDecoded)
@@ -107,16 +91,12 @@ func (network *Network) Listen(ip string, port int) {
 		if !network.checkMessage(messageDecoded.ID) {
 			switch messageDecoded.MessageType {
 			case PING:
-				//fmt.Println("Message Ping Received:", string(messageDecoded.Content[0]))
-				// go kademlia.routingTable.AddContact(messageDecoded.Source)
-				//network.routingTable.AddContact(messageDecoded.Source)
 				network.SendMessage(&messageDecoded.Source, RESPONSE, "", -1)
 				fmt.Println("PING")
 				network.setProceed(messageDecoded.ID)
 				break
 
 			case FIND_NODE:
-				//fmt.Println("We're looking for the contact (FIND_NODE)")
 				wanted := Contact{NewKademliaID(messageDecoded.Content), "", nil}
 				fmt.Println("THE WANTED NODE: " + wanted.String())
 				contacts := network.kademlia.routingTable.FindClosestContacts(wanted.ID, network.kademlia.k)
@@ -129,11 +109,9 @@ func (network *Network) Listen(ip string, port int) {
 				fmt.Println("(SERVER " + port_string + ") R_FIND_NODE received")
 
 				if network.messageRecord[messageDecoded.ID].wanted != nil {
-					// fmt.Println("(SERVER " + port_string + ") R_FIND_NODE : inside first if")
 					network.messageRecord[messageDecoded.ID] = messageControl{network.messageRecord[messageDecoded.ID].count + 1, network.messageRecord[messageDecoded.ID].wanted}
 					control := network.messageRecord[messageDecoded.ID]
 					if control.count < network.kademlia.k-1 {
-						// fmt.Println("(SERVER " + port_string + ") R_FIND_NODE : count inferior to k-1")
 						var contactList []Contact
 						json.Unmarshal([]byte(messageDecoded.Content), &contactList)
 						contactCount := len(contactList)
@@ -166,7 +144,6 @@ func (network *Network) Listen(ip string, port int) {
 						if !hasSendSomething {
 							contactList := network.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
 							network.channel <- contactList
->>>>>>> 767f8db8bd364d4c57f29672aff47286b89d27ee
 
 							fmt.Println("R_FIND_NODE : LookupContact is done, transmitted results : ")
 							fmt.Println(contactList)
@@ -188,26 +165,6 @@ func (network *Network) Listen(ip string, port int) {
 
 				break
 
-<<<<<<< HEAD
-  }
->>>>>>> 4922648e959a6d3672386f419170e11a4468f7bf
-}
-
-func (network *Network) SendPingMessage(contact *Contact) {
-	// TODO Client
-}
-
-func (network *Network) SendFindContactMessage(contact *Contact) {
-	// TODO Client
-}
-
-func (network *Network) SendFindDataMessage(hash string) {
-	// TODO Sprint 2
-}
-
-func (network *Network) SendStoreMessage(data []byte) {
-	// TODO Sprint 2
-=======
 			case FIND_VALUE:
 				hash := messageDecoded.Content
 				ourFileHash := Hash(network.kademlia.data.Get())
@@ -291,9 +248,6 @@ func (network *Network) SendMessage(contact *Contact, mType MessageType, content
 	}
 
 	text, _ := json.Marshal(messageToSend)
-	// fmt.Println("Message: " + string(text) + " Dest: " + contact.Address)
-
-	// send to socket
 	fmt.Fprintf(conn, string(text)+"\n")
 }
 
@@ -337,5 +291,4 @@ func (network *Network) StoreLookupContactCallback(hash *KademliaID) {
 
 func RandomInt() int {
 	return rand.Intn(999999999)
->>>>>>> 767f8db8bd364d4c57f29672aff47286b89d27ee
 }
