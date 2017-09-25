@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"testing"
@@ -60,3 +61,4 @@ func node2() {
 	msgID := RandomInt()
 	kademlia.LookupData(Hash(data), msgID)
 }
+*/

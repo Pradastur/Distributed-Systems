@@ -32,14 +32,18 @@ func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kad
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
-	contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
-	kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
-	//fmt.Println("SOURCE: " + source.Address)
-	for i := range contacts {
-		fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
-		kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
-		kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
+	//	nilContact := Contact{nil, "", nil}
+	//	fmt.Println(kademlia.routingTable.GetContact(*target))
+	if kademlia.routingTable.GetContact(*target) != *target {
+		contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+		kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
+		for i := range contacts {
+			fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
+			kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
+			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
+		}
 	}
+	fmt.Println("I already have it")
 }
 
 func (kademlia *Kademlia) LookupData(hash string, messageId int) {
