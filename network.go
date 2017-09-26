@@ -117,8 +117,7 @@ func (network *Network) Listen(ip string, port int) {
 						json.Unmarshal([]byte(messageDecoded.Content), &contactList)
 						contactCount := len(contactList)
 
-						var alreadyChecked bool
-						var hasSendSomething bool
+						var alreadyChecked, hasSendSomething bool
 						hasSendSomething = false
 						for i := 0; i < contactCount; i++ {
 							alreadyChecked = false
@@ -281,6 +280,10 @@ func (network *Network) StoreLookupContactCallback(hash *KademliaID) {
 	for i := range contactList {
 		network.SendUpdateDHTMessage(contactList[i], hash)
 	}
+}
+
+func (network *Network) Join(contact Contact) {
+	network.SendFindContactMessage(&contact, network.routingTable.me.ID, RandomInt())
 }
 
 func RandomInt() int {

@@ -39,7 +39,7 @@ func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
 		}
 	}
-	fmt.Println("I already have it")
+	fmt.Println("I already have it in my routing table")
 }
 
 func (kademlia *Kademlia) LookupData(hash string, messageId int) {
