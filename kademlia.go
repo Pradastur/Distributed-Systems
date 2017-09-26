@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"sync"
 )
 
 type Kademlia struct {
@@ -22,17 +23,19 @@ func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kad
 	kademlia.routingTable = rt
 	kademlia.k = k
 	kademlia.alpha = alpha
-	networkMessageRecord := make(map[int]messageControl)
 	kademlia.dht = DHT{make(map[KademliaID][]Contact)}
 	kademlia.data = savedata{}
-	kademlia.network = Network{rt, kademlia, idMap, networkMessageRecord, channel}
+	record := MessageRecordMutex{make(map[int]messageControl), sync.Mutex{}}
+	kademlia.network = Network{rt, kademlia, idMap, channel, record}
 	return kademlia
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 	if kademlia.routingTable.GetContact(*target) != *target {
 		contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
-		kademlia.network.messageRecord[messageID] = messageControl{0, target.ID}
+		kademlia.network.record.mutex.Lock()
+		kademlia.network.record.messageRecord[messageID] = messageControl{0, target.ID}
+		kademlia.network.record.mutex.Unlock()
 		for i := range contacts {
 			fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
 			kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
@@ -45,7 +48,9 @@ func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 func (kademlia *Kademlia) LookupData(hash string, messageId int) {
 
 	kademliaIdHash := NewKademliaID(hash)
-	kademlia.network.messageRecord[messageId] = messageControl{0, kademliaIdHash}
+	kademlia.network.record.mutex.Lock()
+	kademlia.network.record.messageRecord[messageId] = messageControl{0, kademliaIdHash}
+	kademlia.network.record.mutex.Unlock()
 	contact := Contact{kademliaIdHash, "", nil}
 	var contactList []Contact
 

@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net"
 	"strconv"
+	"sync"
 )
 
 type messageControl struct {
@@ -14,12 +15,17 @@ type messageControl struct {
 	wanted *KademliaID
 }
 
-type Network struct {
-	routingTable  RoutingTable
-	kademlia      *Kademlia
-	messageIDs    map[int]bool
+type MessageRecordMutex struct {
 	messageRecord map[int]messageControl
-	channel       chan []Contact
+	mutex         sync.Mutex
+}
+
+type Network struct {
+	routingTable RoutingTable
+	kademlia     *Kademlia
+	messageIDs   map[int]bool
+	channel      chan []Contact
+	record       MessageRecordMutex
 }
 
 type MessageType int
@@ -100,7 +106,9 @@ func (network *Network) Listen(ip string, port int) {
 			case FIND_NODE:
 				wanted := Contact{NewKademliaID(messageDecoded.Content), "", nil}
 				fmt.Println("THE WANTED NODE: " + wanted.String())
+
 				contacts := network.kademlia.routingTable.FindClosestContacts(wanted.ID, network.kademlia.k)
+
 				contactsMarshalized, _ := json.Marshal(contacts)
 				network.SendMessage(&messageDecoded.Source, R_FIND_NODE, string(contactsMarshalized), messageDecoded.ID)
 				network.setProceed(messageDecoded.ID)
@@ -109,9 +117,13 @@ func (network *Network) Listen(ip string, port int) {
 			case R_FIND_NODE:
 				fmt.Println("(SERVER " + port_string + ") R_FIND_NODE received")
 
-				if network.messageRecord[messageDecoded.ID].wanted != nil {
-					network.messageRecord[messageDecoded.ID] = messageControl{network.messageRecord[messageDecoded.ID].count + 1, network.messageRecord[messageDecoded.ID].wanted}
-					control := network.messageRecord[messageDecoded.ID]
+				network.record.mutex.Lock()
+				if network.record.messageRecord[messageDecoded.ID].wanted != nil {
+					network.record.mutex.Unlock()
+					network.record.mutex.Lock()
+					network.record.messageRecord[messageDecoded.ID] = messageControl{network.record.messageRecord[messageDecoded.ID].count + 1, network.record.messageRecord[messageDecoded.ID].wanted}
+					control := network.record.messageRecord[messageDecoded.ID]
+					network.record.mutex.Unlock()
 					if control.count < network.kademlia.k {
 						var contactList []Contact
 						json.Unmarshal([]byte(messageDecoded.Content), &contactList)
@@ -186,14 +198,20 @@ func (network *Network) Listen(ip string, port int) {
 
 			case R_FIND_VALUE:
 				fmt.Println("R_FIND_VALUE : just received")
-				if network.messageRecord[messageDecoded.ID].wanted != nil {
-					network.messageRecord[messageDecoded.ID] = messageControl{network.messageRecord[messageDecoded.ID].count + 1, network.messageRecord[messageDecoded.ID].wanted}
-					control := network.messageRecord[messageDecoded.ID]
+				network.record.mutex.Lock()
+				if network.record.messageRecord[messageDecoded.ID].wanted != nil {
+					network.record.mutex.Unlock()
+					network.record.mutex.Lock()
+					network.record.messageRecord[messageDecoded.ID] = messageControl{network.record.messageRecord[messageDecoded.ID].count + 1, network.record.messageRecord[messageDecoded.ID].wanted}
+					control := network.record.messageRecord[messageDecoded.ID]
+					network.record.mutex.Unlock()
 					if control.count < network.kademlia.k-1 {
 						var contactList []Contact
 						json.Unmarshal([]byte(messageDecoded.Content), &contactList)
 						for i := 0; i < len(contactList); i++ {
-							network.SendFindDataMessage(contactList[i], network.messageRecord[messageDecoded.ID].wanted, messageDecoded.ID)
+							network.record.mutex.Lock()
+							network.SendFindDataMessage(contactList[i], network.record.messageRecord[messageDecoded.ID].wanted, messageDecoded.ID)
+							network.record.mutex.Unlock()
 						}
 					} else {
 						fmt.Println("R_FIND_VALUE : count is bigger than k. Data doesn't exist")
