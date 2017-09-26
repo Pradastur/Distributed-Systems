@@ -112,31 +112,22 @@ func (network *Network) Listen(ip string, port int) {
 				if network.messageRecord[messageDecoded.ID].wanted != nil {
 					network.messageRecord[messageDecoded.ID] = messageControl{network.messageRecord[messageDecoded.ID].count + 1, network.messageRecord[messageDecoded.ID].wanted}
 					control := network.messageRecord[messageDecoded.ID]
-					if control.count < network.kademlia.k-1 {
+					if control.count < network.kademlia.k {
 						var contactList []Contact
 						json.Unmarshal([]byte(messageDecoded.Content), &contactList)
 						contactCount := len(contactList)
 
-						var maxIndex int
-						if contactCount < network.kademlia.alpha {
-							maxIndex = contactCount
-						} else {
-							maxIndex = network.kademlia.alpha
-						}
-
 						var alreadyChecked bool
 						var hasSendSomething bool
 						hasSendSomething = false
-						for i := 0; i < maxIndex; i++ {
+						for i := 0; i < contactCount; i++ {
 							alreadyChecked = false
 							for j := range network.kademlia.alreadyCheckedContacts {
 								if contactList[i].ID.Equals(network.kademlia.alreadyCheckedContacts[j].ID) {
 									alreadyChecked = true
-									fmt.Println("If its already checked")
 								}
 							}
 							if !alreadyChecked {
-								fmt.Println("why are you here??")
 								network.routingTable.AddContact(contactList[i])
 								network.SendFindContactMessage(&contactList[i], control.wanted, messageDecoded.ID)
 								network.kademlia.alreadyCheckedContacts = append(network.kademlia.alreadyCheckedContacts, contactList[i])
@@ -154,7 +145,7 @@ func (network *Network) Listen(ip string, port int) {
 							network.setProceed(messageDecoded.ID)
 						}
 					} else {
-						if control.count == network.kademlia.k-1 {
+						if control.count == network.kademlia.k {
 							contactList := network.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
 							network.channel <- contactList
 

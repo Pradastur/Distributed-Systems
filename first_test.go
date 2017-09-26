@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"testing"
+	"time"
 )
 
 func Test1(t *testing.T) {
@@ -28,15 +30,15 @@ func node0() {
 	rt.AddContact(node3)
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	//data := []byte("Data Test 0")
+	data := []byte("Data")
 	//Ping function properly tested (no devuelve response)
 	//kademlia.network.SendPingMessage(&node1)
-	data1 := []byte("Data Test 1")
-	//data4 := []byte("Data Test 4")
-	msgID := RandomInt()
-
-	//kademlia.Store(data)
+	//data1 := []byte("Data Test 1")
+	//data4 := []byte("Data")
+	//msgID := RandomInt()
 	go kademlia.network.Listen("localhost", 8000)
+
+	kademlia.Store(data)
 	//1. (LookupContact)Looking for node1 (already have it in my routing table)
 	//kademlia.LookupContact(&node1, 1234)
 	//2. (LookupContact)Looking for node4 (don't have in my routing table)
@@ -45,7 +47,7 @@ func node0() {
 	//kademlia.LookupData(Hash(data), 1234)
 	//4. (LookupData)Looking for data in node1 (don't have it but already
 	//have the destiny node in my routing table)
-	kademlia.LookupData(Hash(data1), msgID)
+	//kademlia.LookupData(Hash(data1), msgID)
 	//5. (LookupData)Looking for data in node4 (don't have it and don't
 	//have the destiny node in my routing table)
 	//kademlia.LookupData(Hash(data4), 1234)
@@ -53,14 +55,26 @@ func node0() {
 
 func node1() {
 	mySelf := NewContact(NewKademliaID("1111111100000000000000000000000000000000"), "localhost:8001")
+	node0 := NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000")
+
 	rt := NewRoutingTable(mySelf)
 
+	msgID := RandomInt()
+
 	rt.AddContact(mySelf)
+	rt.AddContact(node0)
+
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	data1 := []byte("Data Test 1")
-	kademlia.Store(data1)
+	data := []byte("Data")
+	//kademlia.Store(data1)
 	go kademlia.network.Listen("localhost", 8001)
+
+	time.Sleep(5000000000)
+	fmt.Println("-------------------------------LookUpDataInDHT------------------------------------------")
+
+	kademlia.LookupData(Hash(data), msgID)
+
 }
 
 func node2() {
@@ -68,6 +82,7 @@ func node2() {
 	rt := NewRoutingTable(mySelf)
 
 	node4 := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+
 	rt.AddContact(mySelf)
 	rt.AddContact(node4)
 	channel := make(chan []Contact)
@@ -87,12 +102,22 @@ func node3() {
 
 func node4() {
 	mySelf := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+	//node2 := NewContact(NewKademliaID("1111111200000000000000000000000000000000"), "localhost:8002")
+
 	rt := NewRoutingTable(mySelf)
 
+	//rt.AddContact(node2)
 	rt.AddContact(mySelf)
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	//data4 := []byte("Data Test 4")
+	//data := []byte("Data")
+	//msgID := RandomInt()
 	//kademlia.Store(data4)
 	go kademlia.network.Listen("localhost", 8004)
+	/*
+		time.Sleep(10000000000)
+		fmt.Println("-------------------------------LookUpDataNoDHT------------------------------------------")
+
+		kademlia.LookupData(Hash(data), msgID)
+	*/
 }

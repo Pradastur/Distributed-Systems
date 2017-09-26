@@ -39,7 +39,6 @@ func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
 		}
 	}
-	fmt.Println("Quiero sacar la routing table de mi nodo aqui")
 	fmt.Println("I already have it")
 }
 
