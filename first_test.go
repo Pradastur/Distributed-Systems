@@ -28,24 +28,25 @@ func node0() {
 	rt.AddContact(node3)
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	data := []byte("Data Test 0")
+	//data := []byte("Data Test 0")
 	//Ping function properly tested (no devuelve response)
 	//kademlia.network.SendPingMessage(&node1)
-	//data1 := []byte("Data Test 1")
+	data1 := []byte("Data Test 1")
 	//data4 := []byte("Data Test 4")
+	msgID := RandomInt()
 
-	kademlia.Store(data)
+	//kademlia.Store(data)
 	go kademlia.network.Listen("localhost", 8000)
-	//1. Looking for node1 (already have it in my routing table)
+	//1. (LookupContact)Looking for node1 (already have it in my routing table)
 	//kademlia.LookupContact(&node1, 1234)
-	//2. Looking for node4 (don't have in my routing table)
+	//2. (LookupContact)Looking for node4 (don't have in my routing table)
 	//kademlia.LookupContact(&node4, 1234)
-	//3. Looking for data in node0 (already have it)
+	//3. (LookupData)Looking for data in node0 (already have it)
 	//kademlia.LookupData(Hash(data), 1234)
-	//4. Looking for data in node1 (don't have it but already
+	//4. (LookupData)Looking for data in node1 (don't have it but already
 	//have the destiny node in my routing table)
-	//kademlia.LookupData(Hash(data1), 1234)
-	//5. Looking for data in node4 (don't have it and don't
+	kademlia.LookupData(Hash(data1), msgID)
+	//5. (LookupData)Looking for data in node4 (don't have it and don't
 	//have the destiny node in my routing table)
 	//kademlia.LookupData(Hash(data4), 1234)
 }
@@ -57,8 +58,8 @@ func node1() {
 	rt.AddContact(mySelf)
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	//data1 := []byte("Data Test 1")
-	//kademlia.Store(data1)
+	data1 := []byte("Data Test 1")
+	kademlia.Store(data1)
 	go kademlia.network.Listen("localhost", 8001)
 }
 

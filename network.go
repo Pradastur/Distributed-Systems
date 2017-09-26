@@ -132,9 +132,11 @@ func (network *Network) Listen(ip string, port int) {
 							for j := range network.kademlia.alreadyCheckedContacts {
 								if contactList[i].ID.Equals(network.kademlia.alreadyCheckedContacts[j].ID) {
 									alreadyChecked = true
+									fmt.Println("If its already checked")
 								}
 							}
 							if !alreadyChecked {
+								fmt.Println("why are you here??")
 								network.routingTable.AddContact(contactList[i])
 								network.SendFindContactMessage(&contactList[i], control.wanted, messageDecoded.ID)
 								network.kademlia.alreadyCheckedContacts = append(network.kademlia.alreadyCheckedContacts, contactList[i])

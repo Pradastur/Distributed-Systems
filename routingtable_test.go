@@ -13,15 +13,6 @@ func TestRoutingTable(t *testing.T) {
 	go node2()
 	for {
 	}
-<<<<<<< HEAD
-
-	kademlia:=NewKademlia(*rt,2,1)
-	go kademlia.ServerThread("8000")
-<<<<<<< HEAD
-=======
-	fmt.Println(SendPingMessage(srcContact, srcContact))
->>>>>>> b799241e9953bb156fdedc5e994fabaecb300906
-=======
 }
 
 func node0() {
@@ -69,6 +60,5 @@ func node2() {
 	data := []byte("Some rdm data")
 	msgID := RandomInt()
 	kademlia.LookupData(Hash(data), msgID)
->>>>>>> 767f8db8bd364d4c57f29672aff47286b89d27ee
 }
 */

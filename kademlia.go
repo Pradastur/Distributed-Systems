@@ -39,6 +39,7 @@ func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
 		}
 	}
+	fmt.Println("Quiero sacar la routing table de mi nodo aqui")
 	fmt.Println("I already have it")
 }
 
@@ -48,6 +49,7 @@ func (kademlia *Kademlia) LookupData(hash string, messageId int) {
 	kademlia.network.messageRecord[messageId] = messageControl{0, kademliaIdHash}
 	contact := Contact{kademliaIdHash, "", nil}
 	var contactList []Contact
+
 	if kademlia.dht.hasContactsFor(*kademliaIdHash) {
 		fmt.Println("LookupData() : Hash is in DHT")
 		kademlia.LookupContact(&contact, RandomInt())
