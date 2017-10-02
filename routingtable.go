@@ -1,10 +1,13 @@
 package main
 
+import "sync"
+
 const bucketSize = 20
 
 type RoutingTable struct {
-	me      Contact
-	buckets [IDLength * 8]*bucket
+	me           Contact
+	buckets      [IDLength * 8]*bucket
+	mutexRouting sync.Mutex
 }
 
 func NewRoutingTable(me Contact) *RoutingTable {
@@ -27,12 +30,15 @@ func (routingTable *RoutingTable) GetContact(contact Contact) Contact {
 }
 
 func (routingTable *RoutingTable) AddContact(contact Contact) {
+	routingTable.mutexRouting.Lock()
 	bucketIndex := routingTable.getBucketIndex(contact.ID)
 	bucket := routingTable.buckets[bucketIndex]
 	bucket.AddContact(contact)
+	routingTable.mutexRouting.Unlock()
 }
 
 func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count int) []Contact {
+	routingTable.mutexRouting.Lock()
 	var candidates ContactCandidates
 	bucketIndex := routingTable.getBucketIndex(target)
 	bucket := routingTable.buckets[bucketIndex]
@@ -55,7 +61,7 @@ func (routingTable *RoutingTable) FindClosestContacts(target *KademliaID, count 
 	if count > candidates.Len() {
 		count = candidates.Len()
 	}
-
+	routingTable.mutexRouting.Unlock()
 	return candidates.GetContacts(count)
 }
 
