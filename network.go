@@ -20,12 +20,17 @@ type MessageRecordMutex struct {
 	mutex         sync.Mutex
 }
 
-type Network struct {
+type RoutingTableMutex struct {
 	routingTable RoutingTable
-	kademlia     *Kademlia
-	messageIDs   map[int]bool
-	channel      chan []Contact
-	record       MessageRecordMutex
+	mutex        sync.Mutex
+}
+
+type Network struct {
+	routine    RoutingTableMutex
+	kademlia   *Kademlia
+	messageIDs map[int]bool
+	channel    chan []Contact
+	record     MessageRecordMutex
 }
 
 type MessageType int
@@ -91,8 +96,10 @@ func (network *Network) Listen(ip string, port int) {
 		json.Unmarshal([]byte(message), &messageDecoded)
 
 		//add contact at the routing table
-		network.routingTable.AddContact(messageDecoded.Source)
-		fmt.Println("(SERVER "+port_string+") receives message type: ", messageDecoded.MessageType)
+		network.record.mutex.Lock()
+		network.routine.routingTable.AddContact(messageDecoded.Source)
+		network.record.mutex.Unlock()
+		fmt.Println("(SERVER "+port_string+") receives message type: ", messageDecoded.MessageType, "From server:"+messageDecoded.Source.String())
 
 		if !network.checkMessage(messageDecoded.ID) {
 			switch messageDecoded.MessageType {
@@ -139,7 +146,9 @@ func (network *Network) Listen(ip string, port int) {
 								}
 							}
 							if !alreadyChecked {
-								network.routingTable.AddContact(contactList[i])
+								network.record.mutex.Lock()
+								network.routine.routingTable.AddContact(contactList[i])
+								network.record.mutex.Unlock()
 								network.SendFindContactMessage(&contactList[i], control.wanted, messageDecoded.ID)
 								network.kademlia.alreadyCheckedContacts = append(network.kademlia.alreadyCheckedContacts, contactList[i])
 								fmt.Println("(SERVER " + port_string + ") sent messageID " + strconv.Itoa(messageDecoded.ID) + " to " + contactList[i].Address)
@@ -147,7 +156,9 @@ func (network *Network) Listen(ip string, port int) {
 							}
 						}
 						if !hasSendSomething {
-							contactList := network.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
+							network.record.mutex.Lock()
+							contactList := network.routine.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
+							network.record.mutex.Unlock()
 							network.channel <- contactList
 
 							fmt.Println("R_FIND_NODE : LookupContact is done, transmitted results : ")
@@ -157,7 +168,9 @@ func (network *Network) Listen(ip string, port int) {
 						}
 					} else {
 						if control.count == network.kademlia.k {
-							contactList := network.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
+							network.record.mutex.Lock()
+							contactList := network.routine.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
+							network.record.mutex.Unlock()
 							network.channel <- contactList
 
 							fmt.Println("R_FIND_NODE : LookupContact is done, transmitted results : ")
@@ -188,7 +201,9 @@ func (network *Network) Listen(ip string, port int) {
 						network.SendMessage(&messageDecoded.Source, R_FIND_VALUE, string(contactListMarshalized), messageDecoded.ID)
 					} else {
 						fmt.Println("FIND_VALUE : I have nothing")
-						contactList := network.routingTable.FindClosestContacts(NewKademliaID(hash), network.kademlia.alpha)
+						network.record.mutex.Lock()
+						contactList := network.routine.routingTable.FindClosestContacts(NewKademliaID(hash), network.kademlia.alpha)
+						network.record.mutex.Unlock()
 						contactListMarshalized, _ := json.Marshal(contactList)
 						network.SendMessage(&messageDecoded.Source, R_FIND_VALUE, string(contactListMarshalized), messageDecoded.ID)
 					}
@@ -252,7 +267,9 @@ func (network *Network) SendMessage(contact *Contact, mType MessageType, content
 	if messageID != -1 {
 		ID = messageID
 	}
-	messageToSend := &Message{network.routingTable.me, mType, content, ID}
+	network.record.mutex.Lock()
+	messageToSend := &Message{network.routine.routingTable.me, mType, content, ID}
+	network.record.mutex.Unlock()
 	conn, conErr := net.Dial("udp", contact.Address)
 	if conErr != nil {
 		fmt.Println("No se puede crear la conexion de salida (CLIENTE).")
@@ -301,7 +318,9 @@ func (network *Network) StoreLookupContactCallback(hash *KademliaID) {
 }
 
 func (network *Network) Join(contact Contact) {
-	network.SendFindContactMessage(&contact, network.routingTable.me.ID, RandomInt())
+	network.record.mutex.Lock()
+	network.SendFindContactMessage(&contact, network.routine.routingTable.me.ID, RandomInt())
+	network.record.mutex.Unlock()
 }
 
 func RandomInt() int {

@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"testing"
@@ -97,5 +98,5 @@ func node4() {
 		fmt.Println("-------------------------------LookUpDataNoDHT------------------------------------------")
 
 		kademlia.LookupData(Hash(data), msgID)
-	*/
-}
+
+}*/

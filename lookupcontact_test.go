@@ -1,6 +1,5 @@
 package main
 
-/*
 import (
 	"testing"
 	"time"
@@ -87,4 +86,3 @@ func node4() {
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	go kademlia.network.Listen("localhost", 8004)
 }
-*/

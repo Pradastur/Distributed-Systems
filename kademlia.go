@@ -26,20 +26,24 @@ func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kad
 	kademlia.dht = DHT{make(map[KademliaID][]Contact)}
 	kademlia.data = savedata{}
 	record := MessageRecordMutex{make(map[int]messageControl), sync.Mutex{}}
-	kademlia.network = Network{rt, kademlia, idMap, channel, record}
+	rout := RoutingTableMutex{rt, sync.Mutex{}}
+	kademlia.network = Network{rout, kademlia, idMap, channel, record}
 	return kademlia
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact, messageID int) {
 	if kademlia.routingTable.GetContact(*target) != *target {
-		ContactCandidates := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+		contacts := kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+		for j := range contacts {
+			fmt.Println("ESTA ES LA LISTA DE CONTACTOS: " + contacts[j].ID.String())
+		}
 		kademlia.network.record.mutex.Lock()
 		kademlia.network.record.messageRecord[messageID] = messageControl{0, target.ID}
 		kademlia.network.record.mutex.Unlock()
-		for i := range ContactCandidates {
-			fmt.Println("LOOKUP sent to this contact: " + ContactCandidates[i].Address)
-			kademlia.network.SendFindContactMessage(&ContactCandidates[i], target.ID, messageID)
-			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, ContactCandidates[i])
+		for i := range contacts {
+			fmt.Println("LOOKUP sent to this contact: " + contacts[i].Address)
+			kademlia.network.SendFindContactMessage(&contacts[i], target.ID, messageID)
+			kademlia.alreadyCheckedContacts = append(kademlia.alreadyCheckedContacts, contacts[i])
 		}
 	}
 	fmt.Println("I already have it in my routing table")
