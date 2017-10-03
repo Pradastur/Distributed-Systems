@@ -11,6 +11,7 @@ func Test_LookUpData(t *testing.T) {
 	go node2()
 	go node3()
 	go node4()
+	go node5()
 	for {
 	}
 }
@@ -22,7 +23,8 @@ func node0() {
 	node1 := NewContact(NewKademliaID("1111111100000000000000000000000000000000"), "localhost:8001")
 	node2 := NewContact(NewKademliaID("1111111200000000000000000000000000000000"), "localhost:8002")
 	node3 := NewContact(NewKademliaID("1111111300000000000000000000000000000000"), "localhost:8003")
-	node4 := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+	//	node4 := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+	node5 := NewContact(NewKademliaID("1111111500000000000000000000000000000000"), "localhost:8005")
 	rt.AddContact(mySelf)
 	rt.AddContact(node1)
 	rt.AddContact(node2)
@@ -35,7 +37,7 @@ func node0() {
 	kademlia.LookupContact(&node1, 1234)
 	time.Sleep(10000000000)
 	//2. (LookupContact)Looking for node4 (don't have in my routing table)
-	kademlia.LookupContact(&node4, 1234)
+	kademlia.LookupContact(&node5, 1234)
 }
 
 func node1() {
@@ -78,11 +80,24 @@ func node3() {
 
 func node4() {
 	mySelf := NewContact(NewKademliaID("1111111400000000000000000000000000000000"), "localhost:8004")
+	node5 := NewContact(NewKademliaID("1111111500000000000000000000000000000000"), "localhost:8005")
+
+	rt := NewRoutingTable(mySelf)
+
+	rt.AddContact(mySelf)
+	rt.AddContact(node5)
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	go kademlia.network.Listen("localhost", 8004)
+}
+
+func node5() {
+	mySelf := NewContact(NewKademliaID("1111111500000000000000000000000000000000"), "localhost:8005")
 
 	rt := NewRoutingTable(mySelf)
 
 	rt.AddContact(mySelf)
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	go kademlia.network.Listen("localhost", 8004)
+	go kademlia.network.Listen("localhost", 8005)
 }

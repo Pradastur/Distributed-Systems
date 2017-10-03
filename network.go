@@ -124,52 +124,33 @@ func (network *Network) Listen(ip string, port int) {
 			case R_FIND_NODE:
 				fmt.Println("(SERVER " + port_string + ") R_FIND_NODE received")
 
-				network.record.mutex.Lock()
-				if network.record.messageRecord[messageDecoded.ID].wanted != nil {
-					network.record.mutex.Unlock()
-					network.record.mutex.Lock()
-					network.record.messageRecord[messageDecoded.ID] = messageControl{network.record.messageRecord[messageDecoded.ID].count + 1, network.record.messageRecord[messageDecoded.ID].wanted}
-					control := network.record.messageRecord[messageDecoded.ID]
-					network.record.mutex.Unlock()
-					if control.count < network.kademlia.k {
-						var contactList []Contact
-						json.Unmarshal([]byte(messageDecoded.Content), &contactList)
-						contactCount := len(contactList)
+				var contactList []Contact
+				json.Unmarshal([]byte(messageDecoded.Content), &contactList)
+				contactCount := len(contactList)
 
-						var alreadyChecked, hasSendSomething bool
-						hasSendSomething = false
-						for i := 0; i < contactCount; i++ {
-							alreadyChecked = false
-							for j := range network.kademlia.alreadyCheckedContacts {
-								if contactList[i].ID.Equals(network.kademlia.alreadyCheckedContacts[j].ID) {
-									alreadyChecked = true
-								}
-							}
-							if !alreadyChecked {
-								network.record.mutex.Lock()
-								network.routine.routingTable.AddContact(contactList[i])
-								network.record.mutex.Unlock()
-								network.SendFindContactMessage(&contactList[i], control.wanted, messageDecoded.ID)
-								network.kademlia.alreadyCheckedContacts = append(network.kademlia.alreadyCheckedContacts, contactList[i])
-								fmt.Println("(SERVER " + port_string + ") sent messageID " + strconv.Itoa(messageDecoded.ID) + " to " + contactList[i].Address)
-								hasSendSomething = true
-							}
+				var alreadyChecked bool
+				for i := 0; i < contactCount; i++ {
+					alreadyChecked = false
+					for j := range network.kademlia.alreadyCheckedContacts {
+						if contactList[i].ID.Equals(network.kademlia.alreadyCheckedContacts[j].ID) {
+							alreadyChecked = true
 						}
-						if !hasSendSomething {
-							network.record.mutex.Lock()
-							contactList := network.routine.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
-							network.record.mutex.Unlock()
-							network.channel <- contactList
-
-							fmt.Println("R_FIND_NODE : LookupContact is done, transmitted results : ")
-							fmt.Println(contactList)
-
-							network.setProceed(messageDecoded.ID)
+					}
+					if !alreadyChecked {
+						network.record.mutex.Lock()
+						network.routine.routingTable.AddContact(contactList[i])
+						network.record.mutex.Unlock()
+						if contactList[i].ID.Equals(network.record.messageRecord[messageDecoded.ID].wanted) {
+							fmt.Println("*****I HAVE IT*****")
+							break
 						}
+						network.SendFindContactMessage(&contactList[i], network.record.messageRecord[messageDecoded.ID].wanted, messageDecoded.ID)
+						network.kademlia.alreadyCheckedContacts = append(network.kademlia.alreadyCheckedContacts, contactList[i])
+						fmt.Println("(SERVER " + port_string + ") sent messageID " + strconv.Itoa(messageDecoded.ID) + " to " + contactList[i].Address)
 					} else {
-						if control.count == network.kademlia.k {
+						if network.record.messageRecord[messageDecoded.ID].count == network.kademlia.k {
 							network.record.mutex.Lock()
-							contactList := network.routine.routingTable.FindClosestContacts(control.wanted, network.kademlia.alpha)
+							contactList := network.routine.routingTable.FindClosestContacts(network.record.messageRecord[messageDecoded.ID].wanted, network.kademlia.alpha)
 							network.record.mutex.Unlock()
 							network.channel <- contactList
 
