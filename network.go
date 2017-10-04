@@ -106,7 +106,7 @@ func (network *Network) Listen(ip string, port int) {
 
 			case PING:
 				network.SendMessage(&messageDecoded.Source, RESPONSE, "", -1)
-				fmt.Println("PING")
+				fmt.Println("Ping")
 				network.setProceed(messageDecoded.ID)
 				break
 
