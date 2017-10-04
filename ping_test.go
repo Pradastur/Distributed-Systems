@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"testing"
 	"time"
@@ -58,4 +59,4 @@ func node2() {
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	go kademlia.network.Listen("localhost", 8002)
-}
+}*/

@@ -14,3 +14,7 @@ func (data *savedata) Save(saving []byte) {
 func (data *savedata) Get() []byte {
 	return data.dataSaved
 }
+
+func (data *savedata) HasData(hash string) bool {
+	return Hash(data.dataSaved) == hash
+}

@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"sync"
 )
 
@@ -57,19 +58,24 @@ func (kademlia *Kademlia) LookupData(hash string, messageId int) {
 	kademlia.network.record.mutex.Unlock()
 	contact := Contact{kademliaIdHash, "", nil}
 	var contactList []Contact
-
-	if kademlia.dht.hasContactsFor(*kademliaIdHash) {
-		fmt.Println("LookupData() : Hash is in DHT")
-		kademlia.LookupContact(&contact, RandomInt())
-		contactList = <-kademlia.network.channel
-		for i := 0; i < len(contactList); i++ {
-			kademlia.network.SendFindDataMessage(contactList[i], kademliaIdHash, messageId)
-		}
+	if kademlia.data.HasData(hash) {
+		fmt.Println("***********I HAVE IT************")
+		fmt.Println(kademlia.data.Get())
+		os.Exit(0)
 	} else {
-		fmt.Println("LookupData() : Hash is not in DHT")
-		list := kademlia.dht.dhtMap[*kademliaIdHash]
-		for i := range list {
-			kademlia.network.SendFindDataMessage(list[i], kademliaIdHash, messageId)
+		if kademlia.dht.hasContactsFor(*kademliaIdHash) {
+			fmt.Println("LookupData() : Hash is in DHT")
+			kademlia.LookupContact(&contact, RandomInt())
+			contactList = <-kademlia.network.channel
+			for i := 0; i < len(contactList); i++ {
+				kademlia.network.SendFindDataMessage(contactList[i], kademliaIdHash, messageId)
+			}
+		} else {
+			fmt.Println("LookupData() : Hash is not in DHT")
+			list := kademlia.dht.dhtMap[*kademliaIdHash]
+			for i := range list {
+				kademlia.network.SendFindDataMessage(list[i], kademliaIdHash, messageId)
+			}
 		}
 	}
 }
