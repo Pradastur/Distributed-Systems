@@ -1,6 +1,5 @@
 package main
 
-/*
 import (
 	"fmt"
 	"testing"
@@ -33,7 +32,6 @@ func node0() {
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	data := []byte("Data")
-
 	go kademlia.network.Listen("localhost", 8000)
 
 	kademlia.Store(data)
@@ -58,6 +56,7 @@ func node1() {
 
 	time.Sleep(5000000000)
 	fmt.Println("-------------------------------LookUpDataInDHT------------------------------------------")
+
 	kademlia.LookupData(Hash(data), msgID)
 }
 
@@ -98,5 +97,5 @@ func node4() {
 		fmt.Println("-------------------------------LookUpDataNoDHT------------------------------------------")
 
 		kademlia.LookupData(Hash(data), msgID)
-
-}*/
+	*/
+}

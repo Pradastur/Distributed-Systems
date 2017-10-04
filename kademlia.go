@@ -80,7 +80,9 @@ func (kademlia *Kademlia) Store(data []byte) {
 	fmt.Println("Stored hash : " + hash.String())
 	pseudoContact := Contact{hash, "", nil}
 	kademlia.dht.Update(hash, kademlia.routingTable.me)
+	fmt.Println("Update")
 	kademlia.LookupContact(&pseudoContact, RandomInt())
+	fmt.Println("LookkUpContact")
 
 	var contactList []Contact // wait for lookup contact response
 	contactList = <-kademlia.network.channel
