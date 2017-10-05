@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
+	"time"
 )
 
 func Test1(t *testing.T) {
@@ -41,6 +43,7 @@ func Test1(t *testing.T) {
 func node0() {
 	mySelf := NewContact(NewKademliaID("0000000000000000000000000000000000000000"), "localhost:8000")
 	next := NewContact(NewKademliaID("0000000000000000000000000000000000000001"), "localhost:8001")
+	node99 := NewContact(NewKademliaID("0000000000000000000000000000000000000099"), "localhost:8099")
 
 	rt := NewRoutingTable(mySelf)
 
@@ -51,6 +54,10 @@ func node0() {
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 
 	go kademlia.network.Listen("localhost", 8000)
+
+	time.Sleep(10000000000)
+	fmt.Println("--------------------------LookUpContact: Node 99-----------------------------")
+	kademlia.LookupContact(&node99, 1234)
 
 	//	kademlia.network.SendPingMessage(&node1)
 
