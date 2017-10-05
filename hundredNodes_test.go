@@ -13,9 +13,14 @@ func Test1(t *testing.T) {
 			port := i
 			KademliaIDName := NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(port))
 			portNext := i + 1
-			KademliaIDNameNext := NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(portNext))
+			if i != 9 {
+				KademliaIDNameNext := NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(portNext))
+				go nextNode(KademliaIDName, KademliaIDNameNext, port, portNext)
+			} else {
+				KademliaIDNameNext2 := NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(portNext))
+				go nextNode(KademliaIDName, KademliaIDNameNext2, port, portNext)
+			}
 			//fmt.Println(KademliaIDName.String())
-			go nextNode(KademliaIDName, KademliaIDNameNext, port, portNext)
 			//KademliaIDnode++
 		} else {
 			port := i
