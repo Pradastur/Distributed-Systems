@@ -2,7 +2,6 @@ package main
 
 /*
 import (
-	"fmt"
 	"testing"
 	"time"
 )
@@ -26,13 +25,17 @@ func node0() {
 	rt.AddContact(mySelf)
 	rt.AddContact(node1)
 
+	data := []byte("Data")
+
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	//msgID := RandomInt()
+	msgID := RandomInt()
 
 	go kademlia.network.Listen("localhost", 8000)
+	kademlia.Store(data)
 
-	//kademlia.LookupData(Hash(data), msgID)
+	time.Sleep(5000000000)
+	kademlia.LookupData(Hash(data), msgID)
 }
 
 func node1() {
@@ -49,13 +52,13 @@ func node1() {
 
 	go kademlia.network.Listen("localhost", 8001)
 
-	data := []byte("Data")
-	msgID := RandomInt()
+	//	data := []byte("Data")
+	//	msgID := RandomInt()
 
-	time.Sleep(5000000000)
-	fmt.Println("-------------------------------LookUpDataInDHT------------------------------------------")
+	//time.Sleep(5000000000)
+	//fmt.Println("-------------------------------LookUpDataInDHT------------------------------------------")
 
-	kademlia.LookupData(Hash(data), msgID)
+	//kademlia.LookupData(Hash(data), msgID)
 }
 
 func node2() {
@@ -89,12 +92,12 @@ func node4() {
 
 	rt.AddContact(mySelf)
 
-	data := []byte("Data")
+	//data := []byte("Data")
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 
 	go kademlia.network.Listen("localhost", 8004)
-	kademlia.Store(data)
+	//kademlia.Store(data)
 
 	/*
 		fmt.Println("-------------------------------LookUpDataNoDHT------------------------------------------")

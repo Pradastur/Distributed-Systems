@@ -3,7 +3,6 @@ package main
 /*
 import (
 	"testing"
-	"time"
 )
 
 func Test_LookUpData(t *testing.T) {
@@ -35,8 +34,8 @@ func node0() {
 	go kademlia.network.Listen("localhost", 8000)
 
 	//1. (LookupContact)Looking for node1 (already have it in my routing table)
-	kademlia.LookupContact(&node1, 1234)
-	time.Sleep(10000000000)
+	//kademlia.LookupContact(&node1, 1234)
+	//time.Sleep(10000000000)
 	//2. (LookupContact)Looking for node4 (don't have in my routing table)
 	kademlia.LookupContact(&node5, 1234)
 }

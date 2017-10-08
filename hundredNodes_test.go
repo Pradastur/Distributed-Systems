@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"strconv"
@@ -97,3 +98,4 @@ func finalNode() {
 	//	time.Sleep(5000000000)
 	//	kademlia.LookupContact(&node2, 1234)
 }
+*/

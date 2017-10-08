@@ -150,7 +150,6 @@ func (network *Network) Listen(ip string, port int) {
 									fmt.Println("*****I HAVE IT*****")
 									break
 								}
-								fmt.Println("OYESSSSSSSSSSSSSSSSSSSSSSSSSSS")
 								network.SendFindContactMessage(&contactList[i], network.record.messageRecord[messageDecoded.ID].wanted, messageDecoded.ID)
 								network.kademlia.alreadyCheckedContacts = append(network.kademlia.alreadyCheckedContacts, contactList[i])
 								fmt.Println("(SERVER " + port_string + ") sent messageID " + strconv.Itoa(messageDecoded.ID) + " to " + contactList[i].Address)
