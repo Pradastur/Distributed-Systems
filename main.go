@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -22,11 +23,31 @@ func main() {
 
 		if strings.Compare("help", text) == 0 {
 			fmt.Println("You can use the next commands:")
-			fmt.Println("pin: mark a file as important (can't be removed)")
-			fmt.Println("unpin: dismark the file as important (can be removed)")
-			fmt.Println("cat: print the content of the file given")
-			fmt.Println("store: save a file in one of the nodes")
+			fmt.Println("new [string address] [int port]: create a new node")
+			fmt.Println("join [contact Contact]: join to the network using the contact passed as parameter")
+			fmt.Println("pin [file File]: mark a file as important (can't be removed)")
+			fmt.Println("unpin [file File]: dismark the file as important (can be removed)")
+			fmt.Println("cat [string address]: print the content of the file given")
+			fmt.Println("store [file File] [string address]: save a file in the node")
 			fmt.Println("exit: leave the simulation")
+		} else if strings.Compare("new", text) == 0 {
+			fmt.Println("Introduce a valid address of 40 numbers, example --> [0000000000000000000000000000000000000000]")
+			address, _ := reader.ReadString('\n')
+			address = strings.Replace(address, "\r\n", "", -1)
+
+			fmt.Println("Address introduced: " + address)
+
+			fmt.Println("Introduce a valid port of 4 numbers, example --> 8000")
+			port, _ := reader.ReadString('\n')
+			port = strings.Replace(port, "\r\n", "", -1)
+
+			fmt.Println("Port introduced: " + port)
+			portInt, _ := strconv.Atoi(port)
+
+			go node(address, portInt)
+
+		} else if strings.Compare("join", text) == 0 {
+			fmt.Println("Une el nodo en la red usando el contacto pasado por parametro")
 		} else if strings.Compare("cat", text) == 0 {
 			fmt.Println("Debe de leer el dato almacenado")
 		} else if strings.Compare("pin", text) == 0 {
@@ -43,6 +64,19 @@ func main() {
 		}
 
 	}
+}
+
+func node(address string, port int) {
+	mySelf := NewContact(NewKademliaID(address), "localhost: "+strconv.Itoa(port))
+
+	rt := NewRoutingTable(mySelf)
+
+	rt.AddContact(mySelf)
+
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+
+	go kademlia.network.Listen("localhost", port)
 
 }
 
