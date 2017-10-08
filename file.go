@@ -3,20 +3,20 @@ package main
 import "time"
 
 type File struct {
-	path           string
-	pinned         bool
-	expirationDate time.Time
-	content        []byte
+	Path           string    `xml: "Path"`
+	Pinned         bool      `xml: "isPinned"`
+	ExpirationDate time.Time `xml: "UntilDate"`
+	Content        []byte    `xml: "-"`
 }
 
-func NewFile(pathA string, pinn bool, cont []byte) File {
-	return File{pathA, pinn, time.Now().Add(time.Hour * 24), cont}
+func NewFile(PathA string, pinn bool, cont []byte) File {
+	return File{PathA, pinn, time.Now().Add(time.Hour * 24), cont}
 }
 
 func (file *File) IsPinned() bool {
-	return file.pinned
+	return file.Pinned
 }
 
 func (file *File) IsOutDate() bool {
-	return !file.expirationDate.After(time.Now())
+	return !file.ExpirationDate.After(time.Now())
 }

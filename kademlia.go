@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 )
 
 type Kademlia struct {
@@ -14,7 +15,7 @@ type Kademlia struct {
 	alpha                  int
 	network                Network
 	dht                    DHT
-	data                   savedata
+	fSys                   Filesystem
 	alreadyCheckedContacts []Contact
 }
 
@@ -25,7 +26,7 @@ func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kad
 	kademlia.k = k
 	kademlia.alpha = alpha
 	kademlia.dht = DHT{make(map[KademliaID][]Contact)}
-	kademlia.data = savedata{}
+	kademlia.fSys = Filesystem{}
 	record := MessageRecordMutex{make(map[int]messageControl), sync.Mutex{}}
 	rout := RoutingTableMutex{rt, sync.Mutex{}}
 	kademlia.network = Network{rout, kademlia, idMap, channel, record}
@@ -58,9 +59,9 @@ func (kademlia *Kademlia) LookupData(hash string, messageId int) {
 	kademlia.network.record.mutex.Unlock()
 	contact := Contact{kademliaIdHash, "", nil}
 	var contactList []Contact
-	if kademlia.data.HasData(hash) {
+	if kademlia.fSys.hasData(hash) {
 		fmt.Println("***********I HAVE IT************")
-		fmt.Println(kademlia.data.Get())
+		fmt.Println(kademlia.fSys.getFile(hash))
 		os.Exit(0)
 	} else {
 		if kademlia.dht.hasContactsFor(*kademliaIdHash) {
@@ -80,9 +81,10 @@ func (kademlia *Kademlia) LookupData(hash string, messageId int) {
 	}
 }
 
-func (kademlia *Kademlia) Store(data []byte) {
+func (kademlia *Kademlia) Store(path string, pinned bool, date time.Time, data []byte) {
 	hash := NewKademliaID(Hash(data))
-	kademlia.data.Save(data)
+	file := NewFile(path, pinned, data)
+	kademlia.fSys.save(file)
 	fmt.Println("Stored hash : " + hash.String())
 	pseudoContact := Contact{hash, "", nil}
 	kademlia.dht.Update(hash, kademlia.routingTable.me)

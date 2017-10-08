@@ -30,10 +30,8 @@ func node0() {
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	data := []byte("Data")
 	go kademlia.network.Listen("localhost", 8000)
 
-	kademlia.Store(data)
 	//1. (LookupContact)Looking for node1 (already have it in my routing table)
 	//kademlia.LookupContact(&node1, 1234)
 	//2. (LookupContact)Looking for node4 (don't have in my routing table)
@@ -58,8 +56,11 @@ func node1() {
 	rt.AddContact(node0)
 
 	channel := make(chan []Contact)
+  data := []byte("Data")
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	go kademlia.network.Listen("localhost", 8001)
+  kademlia.Store(data)
+
 }
 
 func node2() {

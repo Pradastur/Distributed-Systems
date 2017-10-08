@@ -48,6 +48,8 @@ func main() {
 
 		} else if strings.Compare("join", text) == 0 {
 			fmt.Println("Une el nodo en la red usando el contacto pasado por parametro")
+			var contact Contact
+			Join(contact)
 		} else if strings.Compare("cat", text) == 0 {
 			fmt.Println("Debe de leer el dato almacenado")
 		} else if strings.Compare("pin", text) == 0 {
@@ -56,6 +58,7 @@ func main() {
 			fmt.Println("Desbloquea un dato para poder mamonearlo como quieras")
 		} else if strings.Compare("store", text) == 0 {
 			fmt.Println("Almacena un dato")
+
 		} else if strings.Compare("exit", text) == 0 {
 			break
 		} else {

@@ -185,14 +185,14 @@ func (network *Network) Listen(ip string, port int) {
 
 			case FIND_VALUE:
 				hash := messageDecoded.Content
-				ourFileHash := Hash(network.kademlia.data.Get())
+				ourFileHash := Hash(network.kademlia.fSys.files[hash].Content)
 
 				fmt.Println(hash)
 				fmt.Println(ourFileHash)
 
 				if hash == ourFileHash { // I HAVE IT
 					fmt.Println("FIND_VALUE : I have the data case")
-					network.SendStoreMessage(messageDecoded.Source, network.kademlia.data.Get())
+					network.SendStoreMessage(messageDecoded.Source, network.kademlia.fSys.files[hash])
 				} else { // I DONT HAVE IT
 					if network.kademlia.dht.hasContactsFor(*NewKademliaID(hash)) {
 						fmt.Println("FIND_VALUE : I have the hash in DHT")
@@ -237,9 +237,9 @@ func (network *Network) Listen(ip string, port int) {
 				break
 
 			case STORE:
-				var newData []byte
-				json.Unmarshal([]byte(newData), messageDecoded.Content)
-				network.kademlia.data.Save(newData)
+				var newData File
+				json.Unmarshal(File, messageDecoded.Content)
+				network.kademlia.fSys.save(newData)
 				fmt.Println("STORE MSG RECEIVED, File SAVED")
 				hash := NewKademliaID(Hash(newData))
 				network.kademlia.dht.Update(hash, network.kademlia.routingTable.me)
@@ -298,8 +298,8 @@ func (network *Network) SendFindDataMessage(contact Contact, hash *KademliaID, m
 	fmt.Println("SendFindDataMessage() done")
 }
 
-func (network *Network) SendStoreMessage(contact Contact, data []byte) {
-	content, _ := json.Marshal(data)
+func (network *Network) SendStoreMessage(contact Contact, file File) {
+	content, _ := json.Marshal(file)
 	network.SendMessage(&contact, STORE, string(content), RandomInt())
 }
 
