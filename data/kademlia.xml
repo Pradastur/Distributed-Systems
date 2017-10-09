@@ -1,0 +1,15 @@
+ <XMLCreator>
+  	<files></files>
+  	<file>
+  	 	<Path>file.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-10T18:54:04.858691+02:00</ExpirationDate>
+  	 	<Content></Content>
+  	</file>
+  	<file>
+  	 	<Path>fileTest.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-10T19:03:17.2419509+02:00</ExpirationDate>
+  	 	<Content>venga vamos ya</Content>
+  	</file>
+ </XMLCreator>

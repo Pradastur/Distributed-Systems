@@ -10,7 +10,29 @@ import (
 
 func main() {
 
+	file := NewFile("/data", true, []byte(" "))
 	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("Introduce the address of your first node, ej: [0000000000000000000000000000000000000000]")
+	fmt.Print("-> ")
+	firstAddress, _ := reader.ReadString('\n')
+	firstAddress = strings.Replace(firstAddress, "\r\n", "", -1)
+	fmt.Println("Address introduced: " + firstAddress)
+	fmt.Println("Introduce the port of your first node, ej: [8000]")
+	fmt.Print("-> ")
+	firstPort, _ := reader.ReadString('\n')
+	firstPort = strings.Replace(firstPort, "\r\n", "", -1)
+	fmt.Println("Port introduced: " + firstPort)
+	firstPortInt, _ := strconv.Atoi(firstPort)
+
+	mySelf := NewContact(NewKademliaID(firstAddress), "localhost: "+strconv.Itoa(firstPortInt))
+	rt := NewRoutingTable(mySelf)
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	fileSystem := kademlia.fSys
+
+	go kademlia.network.Listen("localhost", firstPortInt)
+
 	fmt.Println("")
 	fmt.Println("WELCOME TO KADEMLIA")
 	fmt.Println("---------------------")
@@ -24,6 +46,7 @@ func main() {
 		if strings.Compare("help", text) == 0 {
 			fmt.Println("You can use the next commands:")
 			fmt.Println("new [string address] [int port]: create a new node")
+			fmt.Println("newFile [string content]: create a new file pinned")
 			fmt.Println("join [contact Contact]: join to the network using the contact passed as parameter")
 			fmt.Println("pin [file File]: mark a file as important (can't be removed)")
 			fmt.Println("unpin [file File]: dismark the file as important (can be removed)")
@@ -49,16 +72,88 @@ func main() {
 		} else if strings.Compare("join", text) == 0 {
 			fmt.Println("Une el nodo en la red usando el contacto pasado por parametro")
 			//var contact Contact
-			//	Join(contact)
+			//Join(contact)
 		} else if strings.Compare("cat", text) == 0 {
-			fmt.Println("Debe de leer el dato almacenado")
+			fmt.Println("Select the file to see the content")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to see, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fmt.Println("Este es: " + string(fileWanted))
+			//no  hace el cat del file porque no ve que lo que introducimos es un numero
+			fileW := fileList[fileWanted]
+			content := string(fileW.Content)
+			fmt.Println("Content is: " + content)
 		} else if strings.Compare("pin", text) == 0 {
-			fmt.Println("Bloquea un dato para que no pueda ser borrado")
+			fmt.Println("Select the file to pin")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to pin, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			fileW.Pinned = true
+			fmt.Println("File pinned")
 		} else if strings.Compare("unpin", text) == 0 {
-			fmt.Println("Desbloquea un dato para poder mamonearlo como quieras")
-		} else if strings.Compare("store", text) == 0 {
-			fmt.Println("Almacena un dato")
+			fmt.Println("Select the file to unpin")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to unpin, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			fileW.Pinned = false
+			fmt.Println("File unpinned")
+		} else if strings.Compare("newFile", text) == 0 {
+			fmt.Println("Introduce the content of the file")
+			cont, _ := reader.ReadString('\n')
+			cont = strings.Replace(cont, "\r\n", "", -1)
 
+			fmt.Println("Name of the file and type, ej: file.txt")
+			nameFile, _ := reader.ReadString('\n')
+			nameFile = strings.Replace(nameFile, "\r\n", "", -1)
+
+			file = NewFile(nameFile, true, []byte(cont))
+
+			fileSystem.save(file)
+
+			fmt.Println("*****File Created*****")
+		} else if strings.Compare("store", text) == 0 {
+			fmt.Println("Select the file to store")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to store, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			kademlia.Store(fileW)
+
+			fmt.Println("File stored")
 		} else if strings.Compare("exit", text) == 0 {
 			break
 		} else {

@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"testing"
 	"time"
@@ -102,5 +103,6 @@ func node4() {
 		fmt.Println("-------------------------------LookUpDataNoDHT------------------------------------------")
 
 		kademlia.LookupData(Hash(data), msgID)
-	*/
+
 }
+*/

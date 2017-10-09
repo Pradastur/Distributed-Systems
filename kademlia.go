@@ -25,7 +25,7 @@ func NewKademlia(rt RoutingTable, k int, alpha int, channel chan []Contact) *Kad
 	kademlia.k = k
 	kademlia.alpha = alpha
 	kademlia.dht = DHT{make(map[KademliaID][]Contact)}
-	kademlia.fSys = Filesystem{}
+	kademlia.fSys = NewFileSystem("data/kademlia.xml")
 	record := MessageRecordMutex{make(map[int]messageControl), sync.Mutex{}}
 	rout := RoutingTableMutex{rt, sync.Mutex{}}
 	kademlia.network = Network{rout, kademlia, idMap, channel, record}
