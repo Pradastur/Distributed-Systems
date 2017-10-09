@@ -29,7 +29,7 @@ func (fileSystem *Filesystem) getFile(hash string) File {
 func (fileSystem *Filesystem) UpdateFile() {
 	fileList := make([]File, len(fileSystem.files))
 	i := 0
-	for hash, file := range fileSystem.files {
+	for _, file := range fileSystem.files {
 		fileList[i] = file
 		i = i + 1
 	}
@@ -43,7 +43,7 @@ func (fileSystem *Filesystem) UpdateFile() {
 }
 
 func (fileSystem *Filesystem) save(file File) {
-	hash := Hash(file.Content)
+	hash := Hash(file.Path)
 	if file.Path != fileSystem.configFile.Path {
 		if fileSystem.hasData(hash) {
 			fileSystem.files[hash] = file
@@ -58,7 +58,7 @@ func (fileSystem *Filesystem) save(file File) {
 }
 
 func (fileSystem *Filesystem) remove(file File) {
-	hash := Hash(file.Content)
+	hash := Hash(file.Path)
 	if fileSystem.hasData(hash) {
 		if !file.IsPinned() {
 			fileSystem.files[hash] = File{}

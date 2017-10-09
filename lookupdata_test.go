@@ -1,6 +1,5 @@
 package main
 
-/*
 import (
 	"testing"
 	"time"
@@ -25,17 +24,17 @@ func node0() {
 	rt.AddContact(mySelf)
 	rt.AddContact(node1)
 
-	data := []byte("Data")
+	file := NewFile("/data/1.txt", true, []byte("hola"))
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	msgID := RandomInt()
 
 	go kademlia.network.Listen("localhost", 8000)
-	kademlia.Store(data)
+	kademlia.Store(file)
 
 	time.Sleep(5000000000)
-	kademlia.LookupData(Hash(data), msgID)
+	kademlia.LookupData(Hash(file.Path), msgID)
 }
 
 func node1() {
@@ -103,6 +102,5 @@ func node4() {
 		fmt.Println("-------------------------------LookUpDataNoDHT------------------------------------------")
 
 		kademlia.LookupData(Hash(data), msgID)
-
+	*/
 }
-*/

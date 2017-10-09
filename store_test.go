@@ -56,10 +56,10 @@ func node1() {
 	rt.AddContact(node0)
 
 	channel := make(chan []Contact)
-  data := []byte("Data")
+	file := NewFile("/data/1.txt", true, []byte("hola"))
 	kademlia := NewKademlia(*rt, 20, 3, channel)
 	go kademlia.network.Listen("localhost", 8001)
-  kademlia.Store(data)
+	kademlia.Store(file)
 
 }
 

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"time"
 )
 
 type Kademlia struct {
@@ -81,9 +80,8 @@ func (kademlia *Kademlia) LookupData(hash string, messageId int) {
 	}
 }
 
-func (kademlia *Kademlia) Store(path string, pinned bool, date time.Time, data []byte) {
-	hash := NewKademliaID(Hash(data))
-	file := NewFile(path, pinned, data)
+func (kademlia *Kademlia) Store(file File) {
+	hash := NewKademliaID(Hash(file.Path))
 	kademlia.fSys.save(file)
 	fmt.Println("Stored hash : " + hash.String())
 	pseudoContact := Contact{hash, "", nil}
@@ -97,10 +95,11 @@ func (kademlia *Kademlia) Store(path string, pinned bool, date time.Time, data [
 	for i := 0; i < len(contactList); i++ {
 		kademlia.network.SendUpdateDHTMessage(contactList[i], hash)
 	}
-	fmt.Println("Data stored and DHTs updated")
+	fmt.Println("************************Data stored and DHTs updated****************************")
 }
 
-func Hash(data []byte) string {
-	hashBytes := sha1.Sum(data) // unless kademlia id changes size, this is fine
+func Hash(data string) string {
+	dataBytes := []byte(data)
+	hashBytes := sha1.Sum(dataBytes) // unless kademlia id changes size, this is fine
 	return hex.EncodeToString(hashBytes[:])
 }

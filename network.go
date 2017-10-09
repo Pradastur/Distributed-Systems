@@ -185,7 +185,7 @@ func (network *Network) Listen(ip string, port int) {
 
 			case FIND_VALUE:
 				hash := messageDecoded.Content
-				ourFileHash := Hash(network.kademlia.fSys.files[hash].Content)
+				ourFileHash := Hash(network.kademlia.fSys.files[hash].Path)
 
 				fmt.Println(hash)
 				fmt.Println(ourFileHash)
@@ -238,10 +238,10 @@ func (network *Network) Listen(ip string, port int) {
 
 			case STORE:
 				var newData File
-				json.Unmarshal(File, messageDecoded.Content)
+				json.Unmarshal([]byte(messageDecoded.Content), &newData)
 				network.kademlia.fSys.save(newData)
 				fmt.Println("STORE MSG RECEIVED, File SAVED")
-				hash := NewKademliaID(Hash(newData))
+				hash := NewKademliaID(Hash(newData.Path))
 				network.kademlia.dht.Update(hash, network.kademlia.routingTable.me)
 
 				ct := Contact{hash, "", nil}

@@ -1,5 +1,6 @@
 package main
 
+/*
 import "fmt"
 
 type savedata struct {
@@ -18,3 +19,4 @@ func (data *savedata) Get() []byte {
 func (data *savedata) HasData(hash string) bool {
 	return Hash(data.dataSaved) == hash
 }
+*/
