@@ -44,7 +44,7 @@ func main() {
 			go nextNode(KademliaIDName, KademliaIDNameNext, port, portNext)
 		}
 	}
-	go finalNode(nodeInt)
+	finalNode(nodeInt)
 	/*
 		mySelf := NewContact(NewKademliaID(firstAddress), "localhost: "+strconv.Itoa(firstPortInt))
 		rt := NewRoutingTable(mySelf)
@@ -53,6 +53,59 @@ func main() {
 
 		go kademlia.network.Listen("localhost", firstPortInt)
 	*/
+
+}
+
+func nextNode(kademliaIDName *KademliaID, kademliaIDNameNext *KademliaID, port int, portNext int) {
+	mySelf := NewContact(kademliaIDName, "localhost:"+strconv.Itoa(8000+port))
+	next := NewContact(kademliaIDNameNext, "localhost:"+strconv.Itoa(8000+portNext))
+
+	rt := NewRoutingTable(mySelf)
+
+	rt.AddContact(mySelf)
+	rt.AddContact(next)
+
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	//	fileSystem := kademlia.fSys
+
+	go kademlia.network.Listen("localhost", 8000+port)
+}
+
+func finalNode(nodeInt int) {
+	var KademliaIDName *KademliaID
+	if nodeInt < 10 {
+		KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
+		/*
+			if nodeInt != 9 {
+				KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
+			} else {
+				KademliaIDName = NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
+			}
+		*/
+		//fmt.Println(KademliaIDName.String())
+		//KademliaIDnode++
+	} else {
+		KademliaIDName = NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
+	}
+
+	mySelf := NewContact(KademliaIDName, "localhost:"+strconv.Itoa(8000+nodeInt))
+	node0 := NewContact(NewKademliaID("0000000000000000000000000000000000000000"), "localhost: 8000")
+
+	rt := NewRoutingTable(mySelf)
+
+	rt.AddContact(mySelf)
+	rt.AddContact(node0)
+
+	channel := make(chan []Contact)
+	kademlia := NewKademlia(*rt, 20, 3, channel)
+	fileSystem := kademlia.fSys
+
+	go kademlia.network.Listen("localhost", 8000+nodeInt)
+
+	file := NewFile("/data", true, []byte(" "))
+	reader := bufio.NewReader(os.Stdin)
+
 	fmt.Println("")
 	fmt.Println("WELCOME TO KADEMLIA")
 	fmt.Println("---------------------")
@@ -94,62 +147,62 @@ func main() {
 			//var contact Contact
 			//Join(contact)
 		} else if strings.Compare("cat", text) == 0 {
-			/*
-				fmt.Println("Select the file to see the content")
-				fileList := make([]File, len(fileSystem.files))
-				i := 0
-				for _, file := range fileSystem.files {
-					fileList[i] = file
-					fmt.Println(i, ": ", file.Path)
-					i = i + 1
-				}
-				fmt.Println("Select which one you want to see, introducing the number associated")
-				numFile, _ := reader.ReadString('\n')
-				numFile = strings.Replace(numFile, "\r\n", "", -1)
-				//	fileWanted, _ := strconv.Atoi(numFile)
-				fmt.Println("Este es: " + numFile)
-				numFileInt, _ := strconv.Atoi("" + numFile)
-				//no  hace el cat del file porque no ve que lo que introducimos es un numero
-				fileW := fileList[numFileInt]
-				content := string(fileW.Content)
-				fmt.Println("Content is: " + content)
-			*/
+
+			fmt.Println("Select the file to see the content")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to see, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			//	fileWanted, _ := strconv.Atoi(numFile)
+			fmt.Println("Este es: " + numFile)
+			numFileInt, _ := strconv.Atoi("" + numFile)
+			//no  hace el cat del file porque no ve que lo que introducimos es un numero
+			fileW := fileList[numFileInt]
+			content := string(fileW.Content)
+			fmt.Println("Content is: " + content)
+
 		} else if strings.Compare("pin", text) == 0 {
-			/*
-				fmt.Println("Select the file to pin")
-				fileList := make([]File, len(fileSystem.files))
-				i := 0
-				for _, file := range fileSystem.files {
-					fileList[i] = file
-					fmt.Println(i, ": ", file.Path)
-					i = i + 1
-				}
-				fmt.Println("Select which one you want to pin, introducing the number associated")
-				numFile, _ := reader.ReadString('\n')
-				numFile = strings.Replace(numFile, "\r\n", "", -1)
-				fileWanted, _ := strconv.Atoi(numFile)
-				fileW := fileList[fileWanted]
-				fileW.Pinned = true
-				fmt.Println("File pinned")
-			*/
+
+			fmt.Println("Select the file to pin")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to pin, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			fileW.Pinned = true
+			fmt.Println("File pinned")
+
 		} else if strings.Compare("unpin", text) == 0 {
-			/*
-				fmt.Println("Select the file to unpin")
-				fileList := make([]File, len(fileSystem.files))
-				i := 0
-				for _, file := range fileSystem.files {
-					fileList[i] = file
-					fmt.Println(i, ": ", file.Path)
-					i = i + 1
-				}
-				fmt.Println("Select which one you want to unpin, introducing the number associated")
-				numFile, _ := reader.ReadString('\n')
-				numFile = strings.Replace(numFile, "\r\n", "", -1)
-				fileWanted, _ := strconv.Atoi(numFile)
-				fileW := fileList[fileWanted]
-				fileW.Pinned = false
-				fmt.Println("File unpinned")
-			*/
+
+			fmt.Println("Select the file to unpin")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to unpin, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			fileW.Pinned = false
+			fmt.Println("File unpinned")
+
 		} else if strings.Compare("newFile", text) == 0 {
 			fmt.Println("Introduce the content of the file")
 			cont, _ := reader.ReadString('\n')
@@ -159,28 +212,28 @@ func main() {
 			nameFile, _ := reader.ReadString('\n')
 			nameFile = strings.Replace(nameFile, "\r\n", "", -1)
 
-			//			file = NewFile(nameFile, true, []byte(cont))
+			file = NewFile(nameFile, true, []byte(cont))
 
-			//	fileSystem.save(file)
+			fileSystem.save(file)
 
 			fmt.Println("*****File Created*****")
 		} else if strings.Compare("store", text) == 0 {
-			/*
-				fmt.Println("Select the file to store")
-				fileList := make([]File, len(fileSystem.files))
-				i := 0
-				for _, file := range fileSystem.files {
-					fileList[i] = file
-					fmt.Println(i, ": ", file.Path)
-					i = i + 1
-				}
-				fmt.Println("Select which one you want to store, introducing the number associated")
-				numFile, _ := reader.ReadString('\n')
-				numFile = strings.Replace(numFile, "\r\n", "", -1)
-				fileWanted, _ := strconv.Atoi(numFile)
-				fileW := fileList[fileWanted]
-				kademlia.Store(fileW)
-			*/
+
+			fmt.Println("Select the file to store")
+			fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to store, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			kademlia.Store(fileW)
+
 			fmt.Println("File stored")
 		} else if strings.Compare("exit", text) == 0 {
 			break
@@ -190,52 +243,7 @@ func main() {
 		}
 
 	}
-}
 
-func nextNode(kademliaIDName *KademliaID, kademliaIDNameNext *KademliaID, port int, portNext int) {
-	mySelf := NewContact(kademliaIDName, "localhost:"+strconv.Itoa(8000+port))
-	next := NewContact(kademliaIDNameNext, "localhost:"+strconv.Itoa(8000+portNext))
-
-	rt := NewRoutingTable(mySelf)
-
-	rt.AddContact(mySelf)
-	rt.AddContact(next)
-
-	channel := make(chan []Contact)
-	kademlia := NewKademlia(*rt, 20, 3, channel)
-	//	fileSystem := kademlia.fSys
-
-	go kademlia.network.Listen("localhost", 8000+port)
-}
-
-func finalNode(nodeInt int) {
-	var KademliaIDName *KademliaID
-	if nodeInt < 10 {
-		KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-		/*
-			if nodeInt != 9 {
-				KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-			} else {
-				KademliaIDName = NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-			}
-		*/
-		//fmt.Println(KademliaIDName.String())
-		//KademliaIDnode++
-	} else {
-		KademliaIDName = NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-	}
-
-	mySelf := NewContact(KademliaIDName, "localhost:"+strconv.Itoa(8000+nodeInt))
-
-	rt := NewRoutingTable(mySelf)
-
-	rt.AddContact(mySelf)
-
-	channel := make(chan []Contact)
-	kademlia := NewKademlia(*rt, 20, 3, channel)
-	//fileSystem := kademlia.fSys
-
-	go kademlia.network.Listen("localhost", 8000+nodeInt)
 }
 
 /*func node(address string, port int) {
