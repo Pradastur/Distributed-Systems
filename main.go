@@ -29,7 +29,6 @@ func main() {
 	rt := NewRoutingTable(mySelf)
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	fileSystem := kademlia.fSys
 
 	go kademlia.network.Listen("localhost", firstPortInt)
 
@@ -45,7 +44,7 @@ func main() {
 
 		if strings.Compare("help", text) == 0 {
 			fmt.Println("You can use the next commands:")
-			fmt.Println("new [string address] [int port]: create a new node")
+			fmt.Println("new [int nodes]: create a new scenario. You have to indicate the number of nodes")
 			fmt.Println("newFile [string content]: create a new file pinned")
 			fmt.Println("join [contact Contact]: join to the network using the contact passed as parameter")
 			fmt.Println("pin [file File]: mark a file as important (can't be removed)")
@@ -211,18 +210,22 @@ func nextNode(kademliaIDName *KademliaID, kademliaIDNameNext *KademliaID, port i
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
+	fileSystem := kademlia.fSys
 
 	go kademlia.network.Listen("localhost", 8000+port)
 }
+
 func finalNode(nodeInt int) {
 	var KademliaIDName *KademliaID
 	if nodeInt < 10 {
 		KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-		if nodeInt != 9 {
-			KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-		} else {
-			KademliaIDName = NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
-		}
+		/*
+			if nodeInt != 9 {
+				KademliaIDName = NewKademliaID("000000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
+			} else {
+				KademliaIDName = NewKademliaID("00000000000000000000000000000000000000" + strconv.Itoa(nodeInt))
+			}
+		*/
 		//fmt.Println(KademliaIDName.String())
 		//KademliaIDnode++
 	} else {
@@ -237,11 +240,12 @@ func finalNode(nodeInt int) {
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
+	fileSystem := kademlia.fSys
 
-	go kademlia.network.Listen("localhost", 8099)
+	go kademlia.network.Listen("localhost", 8000+nodeInt)
 }
 
-func node(address string, port int) {
+/*func node(address string, port int) {
 	mySelf := NewContact(NewKademliaID(address), "localhost: "+strconv.Itoa(port))
 
 	rt := NewRoutingTable(mySelf)
@@ -250,10 +254,11 @@ func node(address string, port int) {
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
+	fileSystem := kademlia.fSys
 
 	go kademlia.network.Listen("localhost", port)
 
-}
+}*/
 
 /*
 // Package implementing formatted I/O.
