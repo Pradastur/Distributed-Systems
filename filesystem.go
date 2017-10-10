@@ -84,8 +84,8 @@ func (fileSystem *Filesystem) remove(file File) {
 	hash := Hash(file.Path)
 	if fileSystem.hasData(hash) {
 		if !file.IsPinned() {
-			fileSystem.files[hash] = File{}
-			os.Remove(hash)
+			delete(fileSystem.files, hash)
+			os.Remove("data/" + file.Path)
 			//TODO Falta XML
 			fileSystem.UpdateFile()
 		}

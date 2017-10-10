@@ -67,8 +67,8 @@ func nextNode(kademliaIDName *KademliaID, kademliaIDNameNext *KademliaID, port i
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
-	file := NewFile("/data/"+strconv.Itoa(port)+".txt", true, []byte(strconv.Itoa(port)))
-	kademlia.Store(file)
+	//file := NewFile("/data/"+strconv.Itoa(port)+".txt", true, []byte(strconv.Itoa(port)))
+	//kademlia.Store(file)
 	//	fileSystem := kademlia.fSys
 
 	go kademlia.network.Listen("localhost", 8000+port)
@@ -128,6 +128,7 @@ func finalNode(nodeInt int) {
 			fmt.Println("remove [file File]: remove this file if its not pinned")
 			fmt.Println("unpin [file File]: dismark the file as important (can be removed)")
 			fmt.Println("cat [file File]: print the content of the file given")
+			fmt.Println("remove [file File]: remove the file selected")
 			fmt.Println("store [file File] [string address]: save a file in the node")
 			fmt.Println("exit: leave the simulation")
 			/*
@@ -161,16 +162,19 @@ func finalNode(nodeInt int) {
 				fmt.Println(i, ": ", file.Content)
 				i = i + 1
 			}
+
 			fmt.Println("Select which one you want to see, introducing the number associated")
 			numFile, _ := reader.ReadString('\n')
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
 			//	fileWanted, _ := strconv.Atoi(numFile)
-			fmt.Println("Este es: " + numFile)
+			//fmt.Println("Este es: " + numFile)
 			numFileInt, _ := strconv.Atoi("" + numFile)
+
 			//no  hace el cat del file porque no ve que lo que introducimos es un numero
 			fileW := fileList[numFileInt]
 			content := string(fileW.Content)
 			fmt.Println("Content is: ", content)
+			fileSystem.UpdateFile()
 
 		} else if strings.Compare("pin", text) == 0 {
 
@@ -180,15 +184,18 @@ func finalNode(nodeInt int) {
 			for _, file := range fileSystem.files {
 				fileList[i] = file
 				fmt.Println(i, ": ", file.Path)
+				fmt.Println(i, ": ", file.IsPinned())
 				i = i + 1
 			}
 			fmt.Println("Select which one you want to pin, introducing the number associated")
 			numFile, _ := reader.ReadString('\n')
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
-			fileWanted, _ := strconv.Atoi(numFile)
-			fileW := fileList[fileWanted]
-			fileW.Pinned = true
+			//fileWanted, _ := strconv.Atoi(numFile)
+			//fileW := fileList[fileWanted]
+			//fileSystem.files[hasList[fileWanted]].Pinned
+
 			fmt.Println("File pinned")
+			fileSystem.UpdateFile()
 
 		} else if strings.Compare("remove", text) == 0 {
 
@@ -213,6 +220,7 @@ func finalNode(nodeInt int) {
 				fmt.Println("Unremovable")
 			}*/
 			fileSystem.remove(fileW)
+			fmt.Println("Removed")
 
 		} else if strings.Compare("unpin", text) == 0 {
 
@@ -222,14 +230,19 @@ func finalNode(nodeInt int) {
 			for _, file := range fileSystem.files {
 				fileList[i] = file
 				fmt.Println(i, ": ", file.Path)
+				fmt.Println(i, ": ", file.IsPinned())
 				i = i + 1
 			}
 			fmt.Println("Select which one you want to unpin, introducing the number associated")
 			numFile, _ := reader.ReadString('\n')
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
-			fileWanted, _ := strconv.Atoi(numFile)
-			fileW := fileList[fileWanted]
-			fileW.Pinned = false
+			//	fileWanted, _ := strconv.Atoi(numFile)
+			//	fileW := fileList[fileWanted]
+			fileCambio, _ := fileSystem.files[numFile]
+			//fileSystem.unpin(fileCambio)
+			fileCambio.Pinned = false
+			fileSystem.UpdateFile()
+			//	fileW.Pinned = false
 			fmt.Println("File unpinned")
 
 		} else if strings.Compare("newFile", text) == 0 {
@@ -246,6 +259,8 @@ func finalNode(nodeInt int) {
 			fileSystem.save(file)
 
 			fmt.Println("*****File Created*****")
+			fileSystem.UpdateFile()
+
 		} else if strings.Compare("store", text) == 0 {
 
 			fmt.Println("Select the file to store")
@@ -264,6 +279,7 @@ func finalNode(nodeInt int) {
 			kademlia.Store(fileW)
 
 			fmt.Println("File stored")
+			fileSystem.UpdateFile()
 		} else if strings.Compare("exit", text) == 0 {
 			break
 		} else {
