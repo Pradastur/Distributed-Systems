@@ -36,7 +36,7 @@ func NewFileSystem(path string) Filesystem {
 	for i := range XMLF.FileArray {
 		file := XMLF.FileArray[i]
 
-		loadF := LoadFile(file.Path, file.Pinned, file.ExpirationDate)
+		loadF := LoadFile(file.Path, file.Pinned, file.ExpirationDate, file.Content)
 		files[Hash(loadF.Path)] = loadF
 	}
 	return Filesystem{NewFile(path, true, xmlData), files}
@@ -63,7 +63,6 @@ func (fileSystem *Filesystem) UpdateFile() {
 	contentFile, _ := xml.MarshalIndent(creator, " ", " 	")
 	newFile.Write(contentFile)
 	newFile.Close()
-
 }
 
 func (fileSystem *Filesystem) save(file File) {

@@ -67,6 +67,8 @@ func nextNode(kademliaIDName *KademliaID, kademliaIDNameNext *KademliaID, port i
 
 	channel := make(chan []Contact)
 	kademlia := NewKademlia(*rt, 20, 3, channel)
+	file := NewFile("/data/"+strconv.Itoa(port)+".txt", true, []byte(strconv.Itoa(port)))
+	kademlia.Store(file)
 	//	fileSystem := kademlia.fSys
 
 	go kademlia.network.Listen("localhost", 8000+port)
@@ -103,13 +105,14 @@ func finalNode(nodeInt int) {
 
 	go kademlia.network.Listen("localhost", 8000+nodeInt)
 
-	file := NewFile("/data", true, []byte(" "))
+	//file := NewFile("/data", true, []byte(" "))
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Println("")
 	fmt.Println("WELCOME TO KADEMLIA")
 	fmt.Println("---------------------")
 	fmt.Println("Enter the command")
+	fileList := make([]File, len(fileSystem.files))
 
 	for {
 		fmt.Print("-> ")
@@ -122,6 +125,7 @@ func finalNode(nodeInt int) {
 			fmt.Println("newFile [string content]: create a new file pinned")
 			fmt.Println("join [contact Contact]: join to the network using the contact passed as parameter")
 			fmt.Println("pin [file File]: mark a file as important (can't be removed)")
+			fmt.Println("remove [file File]: remove this file if its not pinned")
 			fmt.Println("unpin [file File]: dismark the file as important (can be removed)")
 			fmt.Println("cat [file File]: print the content of the file given")
 			fmt.Println("store [file File] [string address]: save a file in the node")
@@ -149,11 +153,12 @@ func finalNode(nodeInt int) {
 		} else if strings.Compare("cat", text) == 0 {
 
 			fmt.Println("Select the file to see the content")
-			fileList := make([]File, len(fileSystem.files))
+			//fileList := make([]File, len(fileSystem.files))
 			i := 0
 			for _, file := range fileSystem.files {
 				fileList[i] = file
 				fmt.Println(i, ": ", file.Path)
+				fmt.Println(i, ": ", file.Content)
 				i = i + 1
 			}
 			fmt.Println("Select which one you want to see, introducing the number associated")
@@ -165,12 +170,12 @@ func finalNode(nodeInt int) {
 			//no  hace el cat del file porque no ve que lo que introducimos es un numero
 			fileW := fileList[numFileInt]
 			content := string(fileW.Content)
-			fmt.Println("Content is: " + content)
+			fmt.Println("Content is: ", content)
 
 		} else if strings.Compare("pin", text) == 0 {
 
 			fmt.Println("Select the file to pin")
-			fileList := make([]File, len(fileSystem.files))
+			//fileList := make([]File, len(fileSystem.files))
 			i := 0
 			for _, file := range fileSystem.files {
 				fileList[i] = file
@@ -185,10 +190,34 @@ func finalNode(nodeInt int) {
 			fileW.Pinned = true
 			fmt.Println("File pinned")
 
+		} else if strings.Compare("remove", text) == 0 {
+
+			fmt.Println("Select the file to remove")
+			//fileList := make([]File, len(fileSystem.files))
+			i := 0
+			for _, file := range fileSystem.files {
+				fileList[i] = file
+				fmt.Println(i, ": ", file.Path)
+				fmt.Println(i, ": ", file.IsPinned())
+				i = i + 1
+			}
+			fmt.Println("Select which one you want to remove, introducing the number associated")
+			numFile, _ := reader.ReadString('\n')
+			numFile = strings.Replace(numFile, "\r\n", "", -1)
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			/*if !fileW.IsPinned() {
+				fileSystem.remove(fileW)
+				fmt.Println("File removed")
+			} else {
+				fmt.Println("Unremovable")
+			}*/
+			fileSystem.remove(fileW)
+
 		} else if strings.Compare("unpin", text) == 0 {
 
 			fmt.Println("Select the file to unpin")
-			fileList := make([]File, len(fileSystem.files))
+			//fileList := make([]File, len(fileSystem.files))
 			i := 0
 			for _, file := range fileSystem.files {
 				fileList[i] = file
@@ -212,7 +241,7 @@ func finalNode(nodeInt int) {
 			nameFile, _ := reader.ReadString('\n')
 			nameFile = strings.Replace(nameFile, "\r\n", "", -1)
 
-			file = NewFile(nameFile, true, []byte(cont))
+			file := NewFile(nameFile, true, []byte(cont))
 
 			fileSystem.save(file)
 
@@ -220,7 +249,7 @@ func finalNode(nodeInt int) {
 		} else if strings.Compare("store", text) == 0 {
 
 			fmt.Println("Select the file to store")
-			fileList := make([]File, len(fileSystem.files))
+			//fileList := make([]File, len(fileSystem.files))
 			i := 0
 			for _, file := range fileSystem.files {
 				fileList[i] = file

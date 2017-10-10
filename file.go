@@ -1,6 +1,8 @@
 package main
 
-import "time"
+import (
+	"time"
+)
 
 type File struct {
 	Path           string    `xml: "Path"`
@@ -13,9 +15,9 @@ func NewFile(PathA string, pinn bool, cont []byte) File {
 	return File{PathA, pinn, time.Now().Add(time.Hour * 24), cont}
 }
 
-func LoadFile(PathA string, pinn bool, expDate time.Time) File {
-	content := ReadFile("/data/" + PathA)
-	return File{PathA, pinn, expDate, content}
+func LoadFile(PathA string, pinn bool, expDate time.Time, cont []byte) File {
+	//content := ReadFile("/data/" + PathA)
+	return File{PathA, pinn, expDate, cont}
 }
 
 func (file *File) IsPinned() bool {

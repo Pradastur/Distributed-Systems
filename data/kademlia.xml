@@ -1,15 +1,45 @@
  <XMLCreator>
   	<files></files>
   	<file>
-  	 	<Path>file.txt</Path>
+  	 	<Path>/data/9.txt</Path>
   	 	<Pinned>true</Pinned>
-  	 	<ExpirationDate>2017-10-10T18:54:04.858691+02:00</ExpirationDate>
-  	 	<Content></Content>
+  	 	<ExpirationDate>2017-10-11T16:11:11.7695363+02:00</ExpirationDate>
+  	 	<Content>9</Content>
   	</file>
   	<file>
-  	 	<Path>fileTest.txt</Path>
+  	 	<Path>a.txt</Path>
   	 	<Pinned>true</Pinned>
-  	 	<ExpirationDate>2017-10-10T19:03:17.2419509+02:00</ExpirationDate>
-  	 	<Content>venga vamos ya</Content>
+  	 	<ExpirationDate>2017-10-11T15:12:36.3360007+02:00</ExpirationDate>
+  	 	<Content>avghvgvgvhgvhbj</Content>
+  	</file>
+  	<file>
+  	 	<Path>/data/1.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-11T17:19:50.8766193+02:00</ExpirationDate>
+  	 	<Content>1</Content>
+  	</file>
+  	<file>
+  	 	<Path>hola.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-11T15:31:50.8692009+02:00</ExpirationDate>
+  	 	<Content>Hola</Content>
+  	</file>
+  	<file>
+  	 	<Path>adios.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-11T15:32:03.6978942+02:00</ExpirationDate>
+  	 	<Content>Adios</Content>
+  	</file>
+  	<file>
+  	 	<Path>nada.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-11T15:54:53.7529911+02:00</ExpirationDate>
+  	 	<Content>Nada</Content>
+  	</file>
+  	<file>
+  	 	<Path>/data/8.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-11T17:18:19.8761053+02:00</ExpirationDate>
+  	 	<Content>8</Content>
   	</file>
  </XMLCreator>
