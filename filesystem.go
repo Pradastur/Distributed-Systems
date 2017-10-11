@@ -91,3 +91,15 @@ func (fileSystem *Filesystem) remove(file File) {
 		}
 	}
 }
+
+func (fileSystem *Filesystem) PinFile(file File) {
+	file.Pinned = true
+	fileSystem.files[Hash(file.Path)] = file
+	fileSystem.UpdateFile()
+}
+
+func (fileSystem *Filesystem) UnpinFile(file File) {
+	file.Pinned = false
+	fileSystem.files[Hash(file.Path)] = file
+	fileSystem.UpdateFile()
+}

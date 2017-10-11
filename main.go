@@ -172,12 +172,10 @@ func finalNode(nodeInt int) {
 			fileW := fileList[numFileInt]
 			content := string(fileW.Content)
 			fmt.Println("Content is: ", content)
-			fileSystem.UpdateFile()
 
 		} else if strings.Compare("pin", text) == 0 {
 
 			fmt.Println("Select the file to pin")
-			//fileList := make([]File, len(fileSystem.files))
 			i := 0
 			for _, file := range fileSystem.files {
 				fileList[i] = file
@@ -188,12 +186,10 @@ func finalNode(nodeInt int) {
 			fmt.Println("Select which one you want to pin, introducing the number associated")
 			numFile, _ := reader.ReadString('\n')
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
-			//fileWanted, _ := strconv.Atoi(numFile)
-			//fileW := fileList[fileWanted]
-			//fileSystem.files[hasList[fileWanted]].Pinned
-
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			fileSystem.PinFile(fileW)
 			fmt.Println("File pinned")
-			fileSystem.UpdateFile()
 
 		} else if strings.Compare("remove", text) == 0 {
 
@@ -223,7 +219,6 @@ func finalNode(nodeInt int) {
 		} else if strings.Compare("unpin", text) == 0 {
 
 			fmt.Println("Select the file to unpin")
-			//fileList := make([]File, len(fileSystem.files))
 			i := 0
 			for _, file := range fileSystem.files {
 				fileList[i] = file
@@ -234,12 +229,11 @@ func finalNode(nodeInt int) {
 			fmt.Println("Select which one you want to unpin, introducing the number associated")
 			numFile, _ := reader.ReadString('\n')
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
-			//	fileWanted, _ := strconv.Atoi(numFile)
-			//	fileW := fileList[fileWanted]
-			fileCambio, _ := fileSystem.files[numFile]
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
+			//fileCambio, _ := fileSystem.files[numFile]
 			//fileSystem.unpin(fileCambio)
-			fileCambio.Pinned = false
-			fileSystem.UpdateFile()
+			fileSystem.UnpinFile(fileW)
 			//	fileW.Pinned = false
 			fmt.Println("File unpinned")
 
