@@ -16,7 +16,6 @@ func NewFile(PathA string, pinn bool, cont []byte) File {
 }
 
 func LoadFile(PathA string, pinn bool, expDate time.Time, cont []byte) File {
-	//content := ReadFile("/data/" + PathA)
 	return File{PathA, pinn, expDate, cont}
 }
 

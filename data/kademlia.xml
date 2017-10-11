@@ -1,6 +1,12 @@
  <XMLCreator>
   	<files></files>
   	<file>
+  	 	<Path>test.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-12T15:32:07.1953862+02:00</ExpirationDate>
+  	 	<Content>test</Content>
+  	</file>
+  	<file>
   	 	<Path>1.txt</Path>
   	 	<Pinned>true</Pinned>
   	 	<ExpirationDate>2017-10-12T14:58:46.0585267+02:00</ExpirationDate>
@@ -8,7 +14,7 @@
   	</file>
   	<file>
   	 	<Path>2.txt</Path>
-  	 	<Pinned>false</Pinned>
+  	 	<Pinned>true</Pinned>
   	 	<ExpirationDate>2017-10-12T15:03:12.3048766+02:00</ExpirationDate>
   	 	<Content>2</Content>
   	</file>
@@ -19,9 +25,9 @@
   	 	<Content>3</Content>
   	</file>
   	<file>
-  	 	<Path>test.txt</Path>
+  	 	<Path>numbers2.txt</Path>
   	 	<Pinned>true</Pinned>
-  	 	<ExpirationDate>2017-10-12T15:32:07.1953862+02:00</ExpirationDate>
-  	 	<Content>test</Content>
+  	 	<ExpirationDate>2017-10-12T16:08:27.6101074+02:00</ExpirationDate>
+  	 	<Content>56789</Content>
   	</file>
  </XMLCreator>

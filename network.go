@@ -318,9 +318,7 @@ func (network *Network) StoreLookupContactCallback(hash *KademliaID) {
 }
 
 func (network *Network) Join(contact Contact) {
-	network.record.mutex.Lock()
 	network.SendFindContactMessage(&contact, network.routine.routingTable.me.ID, RandomInt())
-	network.record.mutex.Unlock()
 }
 
 func RandomInt() int {

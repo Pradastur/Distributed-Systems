@@ -74,8 +74,6 @@ func (fileSystem *Filesystem) save(file File) {
 			newFile.Write(file.Content)
 			newFile.Close()
 			fileSystem.UpdateFile()
-			//TODO Falta XML
-
 		}
 	}
 }
@@ -86,7 +84,6 @@ func (fileSystem *Filesystem) remove(file File) {
 		if !file.IsPinned() {
 			delete(fileSystem.files, hash)
 			os.Remove("data/" + file.Path)
-			//TODO Falta XML
 			fileSystem.UpdateFile()
 		}
 	}

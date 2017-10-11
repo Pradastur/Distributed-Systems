@@ -18,7 +18,6 @@ func node0() {
 	mySelf := NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000")
 	rt := NewRoutingTable(mySelf)
 
-	node1 := NewContact(NewKademliaID("1111111100000000000000000000000000000000"), "localhost:8001")
 	node2 := NewContact(NewKademliaID("1111111200000000000000000000000000000000"), "localhost:8002")
 
 	rt.AddContact(mySelf)
@@ -28,7 +27,7 @@ func node0() {
 
 	go kademlia.network.Listen("localhost", 8000)
 
-	kademlia.network.SendPingMessage(&node1)
+	kademlia.network.Join(node2)
 
 	time.Sleep(5000000000)
 	kademlia.LookupContact(&node2, 1234)
