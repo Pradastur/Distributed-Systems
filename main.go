@@ -128,7 +128,6 @@ func finalNode(nodeInt int) {
 			fmt.Println("remove [file File]: remove this file if its not pinned")
 			fmt.Println("unpin [file File]: dismark the file as important (can be removed)")
 			fmt.Println("cat [file File]: print the content of the file given")
-			fmt.Println("remove [file File]: remove the file selected")
 			fmt.Println("store [file File] [string address]: save a file in the node")
 			fmt.Println("exit: leave the simulation")
 			/*
@@ -159,7 +158,6 @@ func finalNode(nodeInt int) {
 			for _, file := range fileSystem.files {
 				fileList[i] = file
 				fmt.Println(i, ": ", file.Path)
-				fmt.Println(i, ": ", file.Content)
 				i = i + 1
 			}
 

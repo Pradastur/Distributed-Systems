@@ -6,4 +6,10 @@
   	 	<ExpirationDate>2017-10-11T19:26:20.0640445+02:00</ExpirationDate>
   	 	<Content>probando4</Content>
   	</file>
+  	<file>
+  	 	<Path>test.txt</Path>
+  	 	<Pinned>true</Pinned>
+  	 	<ExpirationDate>2017-10-12T11:22:26.9367406+02:00</ExpirationDate>
+  	 	<Content>Testing Kademlia Project</Content>
+  	</file>
  </XMLCreator>
