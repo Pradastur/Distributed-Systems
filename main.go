@@ -112,9 +112,9 @@ func finalNode(nodeInt int) {
 	fmt.Println("WELCOME TO KADEMLIA")
 	fmt.Println("---------------------")
 	fmt.Println("Enter the command")
-	fileList := make([]File, len(fileSystem.files))
 
 	for {
+		fileList := make([]File, len(fileSystem.files))
 		fmt.Print("-> ")
 		text, _ := reader.ReadString('\n')
 		text = strings.Replace(text, "\r\n", "", -1)
@@ -151,6 +151,7 @@ func finalNode(nodeInt int) {
 			//var contact Contact
 			//Join(contact)
 		} else if strings.Compare("cat", text) == 0 {
+			fileSystem.UpdateFile()
 
 			fmt.Println("Select the file to see the content")
 			//fileList := make([]File, len(fileSystem.files))
@@ -164,16 +165,13 @@ func finalNode(nodeInt int) {
 			fmt.Println("Select which one you want to see, introducing the number associated")
 			numFile, _ := reader.ReadString('\n')
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
-			//	fileWanted, _ := strconv.Atoi(numFile)
-			//fmt.Println("Este es: " + numFile)
-			numFileInt, _ := strconv.Atoi("" + numFile)
-
-			//no  hace el cat del file porque no ve que lo que introducimos es un numero
-			fileW := fileList[numFileInt]
+			fileWanted, _ := strconv.Atoi(numFile)
+			fileW := fileList[fileWanted]
 			content := string(fileW.Content)
 			fmt.Println("Content is: ", content)
 
 		} else if strings.Compare("pin", text) == 0 {
+			fileSystem.UpdateFile()
 
 			fmt.Println("Select the file to pin")
 			i := 0
@@ -207,16 +205,15 @@ func finalNode(nodeInt int) {
 			numFile = strings.Replace(numFile, "\r\n", "", -1)
 			fileWanted, _ := strconv.Atoi(numFile)
 			fileW := fileList[fileWanted]
-			/*if !fileW.IsPinned() {
+			if !fileW.IsPinned() {
 				fileSystem.remove(fileW)
 				fmt.Println("File removed")
 			} else {
 				fmt.Println("Unremovable")
-			}*/
-			fileSystem.remove(fileW)
-			fmt.Println("Removed")
+			}
 
 		} else if strings.Compare("unpin", text) == 0 {
+			fileSystem.UpdateFile()
 
 			fmt.Println("Select the file to unpin")
 			i := 0
